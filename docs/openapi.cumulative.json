@@ -12002,6 +12002,233 @@
         }
       }
     },
+    "/apigateway/firma/companies/details/addresses": {
+      "get": {
+        "tags": [
+          "/apigateway/firma"
+        ],
+        "operationId": "get-firma-companies-details-addresses",
+        "parameters": [
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recorded response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "street": {
+                            "type": "string"
+                          },
+                          "streetNumber": {
+                            "type": "string"
+                          },
+                          "zipCode": {
+                            "type": "string"
+                          },
+                          "city": {
+                            "type": "string"
+                          },
+                          "addressAdditional": {
+                            "type": "null"
+                          },
+                          "poBox": {
+                            "type": "string"
+                          },
+                          "mainAddress": {
+                            "type": "boolean"
+                          },
+                          "dateValidFrom": {
+                            "type": "string"
+                          },
+                          "dateValidTo": {
+                            "type": "null"
+                          },
+                          "active": {
+                            "type": "boolean"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "addressType": {
+                            "type": "string"
+                          },
+                          "stateId": {
+                            "type": "null"
+                          },
+                          "countryId": {
+                            "type": "null"
+                          }
+                        },
+                        "required": [
+                          "street",
+                          "streetNumber",
+                          "zipCode",
+                          "city",
+                          "poBox",
+                          "mainAddress",
+                          "dateValidFrom",
+                          "active",
+                          "id",
+                          "addressType"
+                        ]
+                      }
+                    },
+                    "pageable": {
+                      "type": "object",
+                      "properties": {
+                        "pageNumber": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        },
+                        "sort": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "direction": {
+                                "type": "string"
+                              },
+                              "property": {
+                                "type": "string"
+                              },
+                              "ignoreCase": {
+                                "type": "boolean"
+                              },
+                              "nullHandling": {
+                                "type": "string"
+                              },
+                              "ascending": {
+                                "type": "boolean"
+                              },
+                              "descending": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "direction",
+                              "property",
+                              "ignoreCase",
+                              "nullHandling",
+                              "ascending",
+                              "descending"
+                            ]
+                          }
+                        },
+                        "offset": {
+                          "type": "integer"
+                        },
+                        "paged": {
+                          "type": "boolean"
+                        },
+                        "unpaged": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "pageNumber",
+                        "pageSize",
+                        "sort",
+                        "offset",
+                        "paged",
+                        "unpaged"
+                      ]
+                    },
+                    "totalElements": {
+                      "type": "integer"
+                    },
+                    "totalPages": {
+                      "type": "integer"
+                    },
+                    "last": {
+                      "type": "boolean"
+                    },
+                    "size": {
+                      "type": "integer"
+                    },
+                    "number": {
+                      "type": "integer"
+                    },
+                    "sort": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "direction": {
+                            "type": "string"
+                          },
+                          "property": {
+                            "type": "string"
+                          },
+                          "ignoreCase": {
+                            "type": "boolean"
+                          },
+                          "nullHandling": {
+                            "type": "string"
+                          },
+                          "ascending": {
+                            "type": "boolean"
+                          },
+                          "descending": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "direction",
+                          "property",
+                          "ignoreCase",
+                          "nullHandling",
+                          "ascending",
+                          "descending"
+                        ]
+                      }
+                    },
+                    "numberOfElements": {
+                      "type": "integer"
+                    },
+                    "first": {
+                      "type": "boolean"
+                    },
+                    "empty": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "pageable",
+                    "totalElements",
+                    "totalPages",
+                    "last",
+                    "size",
+                    "number",
+                    "sort",
+                    "numberOfElements",
+                    "first",
+                    "empty"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/apigateway/formservice/formulare/mandant/{uuid}": {
       "get": {
         "tags": [
@@ -17314,6 +17541,250 @@
         "responses": {
           "200": {
             "description": "Recorded response"
+          }
+        }
+      }
+    },
+    "/apigateway/notification/notifications/all": {
+      "get": {
+        "tags": [
+          "/apigateway/notification"
+        ],
+        "operationId": "get-notification-notifications-all",
+        "parameters": [
+          {
+            "name": "notificationCenter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "readStatus",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recorded response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "data": {
+                            "type": "object",
+                            "properties": {
+                              "severity": {
+                                "type": "string"
+                              },
+                              "downloadableFiles": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "fileId": {
+                                      "type": "string"
+                                    },
+                                    "fileName": {
+                                      "type": "string"
+                                    },
+                                    "saveWithoutView": {
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "fileId",
+                                    "fileName",
+                                    "saveWithoutView"
+                                  ]
+                                }
+                              },
+                              "requestId": {
+                                "type": "string"
+                              },
+                              "icon": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "clickToClose": {
+                                "type": "boolean"
+                              },
+                              "note": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "severity",
+                              "downloadableFiles",
+                              "requestId",
+                              "icon",
+                              "title",
+                              "clickToClose",
+                              "note"
+                            ]
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "readStatus": {
+                            "type": "boolean"
+                          },
+                          "notificationCenter": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "date",
+                          "type",
+                          "data",
+                          "id",
+                          "readStatus",
+                          "notificationCenter"
+                        ]
+                      }
+                    },
+                    "pageable": {
+                      "type": "object",
+                      "properties": {
+                        "sort": {
+                          "type": "object",
+                          "properties": {
+                            "empty": {
+                              "type": "boolean"
+                            },
+                            "unsorted": {
+                              "type": "boolean"
+                            },
+                            "sorted": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "empty",
+                            "unsorted",
+                            "sorted"
+                          ]
+                        },
+                        "offset": {
+                          "type": "integer"
+                        },
+                        "pageNumber": {
+                          "type": "integer"
+                        },
+                        "pageSize": {
+                          "type": "integer"
+                        },
+                        "paged": {
+                          "type": "boolean"
+                        },
+                        "unpaged": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "sort",
+                        "offset",
+                        "pageNumber",
+                        "pageSize",
+                        "paged",
+                        "unpaged"
+                      ]
+                    },
+                    "totalPages": {
+                      "type": "integer"
+                    },
+                    "totalElements": {
+                      "type": "integer"
+                    },
+                    "last": {
+                      "type": "boolean"
+                    },
+                    "size": {
+                      "type": "integer"
+                    },
+                    "number": {
+                      "type": "integer"
+                    },
+                    "sort": {
+                      "type": "object",
+                      "properties": {
+                        "empty": {
+                          "type": "boolean"
+                        },
+                        "unsorted": {
+                          "type": "boolean"
+                        },
+                        "sorted": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "empty",
+                        "unsorted",
+                        "sorted"
+                      ]
+                    },
+                    "numberOfElements": {
+                      "type": "integer"
+                    },
+                    "first": {
+                      "type": "boolean"
+                    },
+                    "empty": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "content",
+                    "pageable",
+                    "totalPages",
+                    "totalElements",
+                    "last",
+                    "size",
+                    "number",
+                    "sort",
+                    "numberOfElements",
+                    "first",
+                    "empty"
+                  ]
+                }
+              }
+            }
           }
         }
       }
@@ -31725,6 +32196,30 @@
         }
       }
     },
+    "/apigateway/wawi/order-proposals/{uuid}": {
+      "delete": {
+        "tags": [
+          "/apigateway/wawi"
+        ],
+        "operationId": "delete-wawi-order-proposals-by-uuid",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recorded response"
+          }
+        }
+      }
+    },
     "/apigateway/wawi/order-proposals/search": {
       "post": {
         "tags": [
@@ -32622,6 +33117,397 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "/apigateway/wawi"
+        ],
+        "operationId": "put-wawi-orders-by-uuid",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recorded response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "timestampCreated": {
+                      "type": "string"
+                    },
+                    "timestampUpdated": {
+                      "type": "string"
+                    },
+                    "number": {
+                      "type": "string"
+                    },
+                    "supplierName": {
+                      "type": "string"
+                    },
+                    "supplierCustomerCustomerNumber": {
+                      "type": "null"
+                    },
+                    "orderStateDescription": {
+                      "type": "null"
+                    },
+                    "editorName": {
+                      "type": "string"
+                    },
+                    "orderDate": {
+                      "type": "null"
+                    },
+                    "orderQuantity": {
+                      "type": "integer"
+                    },
+                    "orderValue": {
+                      "type": "integer"
+                    },
+                    "deliveryDate": {
+                      "type": "null"
+                    },
+                    "deliveryDateScheduled": {
+                      "type": "null"
+                    },
+                    "filialeName": {
+                      "type": "null"
+                    },
+                    "mailHeader": {
+                      "type": "null"
+                    },
+                    "mailFooter": {
+                      "type": "null"
+                    },
+                    "orderArrivalBookingState": {
+                      "type": "string"
+                    },
+                    "deliveryNumber": {
+                      "type": "null"
+                    },
+                    "comment": {
+                      "type": "null"
+                    },
+                    "invoiceStatus": {
+                      "type": "null"
+                    },
+                    "sumInvoiceAmountNet": {
+                      "type": "null"
+                    },
+                    "orderingPlatform": {
+                      "type": "string"
+                    },
+                    "orderType": {
+                      "type": "null"
+                    },
+                    "supplierDivision": {
+                      "type": "null"
+                    },
+                    "desiredDate": {
+                      "type": "null"
+                    },
+                    "wheelitId": {
+                      "type": "null"
+                    },
+                    "trackingNumber": {
+                      "type": "null"
+                    },
+                    "trackingLink": {
+                      "type": "null"
+                    },
+                    "customerPhoneNumber": {
+                      "type": "null"
+                    },
+                    "supplierEmail": {
+                      "type": "null"
+                    },
+                    "companyPhoneNumber": {
+                      "type": "null"
+                    },
+                    "companyFaxConnection": {
+                      "type": "null"
+                    },
+                    "companyEmail": {
+                      "type": "null"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "supplierId": {
+                      "type": "string"
+                    },
+                    "supplierCustomerId": {
+                      "type": "null"
+                    },
+                    "orderStateId": {
+                      "type": "null"
+                    },
+                    "editorId": {
+                      "type": "string"
+                    },
+                    "filialeId": {
+                      "type": "null"
+                    },
+                    "supplierAddressId": {
+                      "type": "null"
+                    },
+                    "supplierContactId": {
+                      "type": "null"
+                    },
+                    "deliveryTermsId": {
+                      "type": "null"
+                    },
+                    "billingAddressId": {
+                      "type": "null"
+                    },
+                    "deliveryAddressId": {
+                      "type": "null"
+                    },
+                    "stockLocationId": {
+                      "type": "null"
+                    },
+                    "paymentTermsId": {
+                      "type": "null"
+                    },
+                    "costCenterId": {
+                      "type": "null"
+                    },
+                    "customerId": {
+                      "type": "null"
+                    },
+                    "customerDeliveryAddressId": {
+                      "type": "null"
+                    },
+                    "supplierPhoneNumberId": {
+                      "type": "null"
+                    },
+                    "supplierEmailSupplierId": {
+                      "type": "null"
+                    },
+                    "supplierEmailContactId": {
+                      "type": "null"
+                    },
+                    "companyPhoneNumberBranchId": {
+                      "type": "null"
+                    },
+                    "companyFaxConnectionBranchId": {
+                      "type": "null"
+                    },
+                    "companyEmailBranchId": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "active",
+                    "timestampCreated",
+                    "timestampUpdated",
+                    "number",
+                    "supplierName",
+                    "editorName",
+                    "orderQuantity",
+                    "orderValue",
+                    "orderArrivalBookingState",
+                    "orderingPlatform",
+                    "id",
+                    "supplierId",
+                    "editorId"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "number": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "orderingPlatform": {
+                    "type": "string"
+                  },
+                  "orderType": {
+                    "type": "string"
+                  },
+                  "billingAddressId": {
+                    "type": "null"
+                  },
+                  "deliveryAddressId": {
+                    "type": "null"
+                  },
+                  "deliveryDate": {
+                    "type": "null"
+                  },
+                  "deliveryDateScheduled": {
+                    "type": "null"
+                  },
+                  "deliveryTermsId": {
+                    "type": "null"
+                  },
+                  "deliveryNumber": {
+                    "type": "null"
+                  },
+                  "editorId": {
+                    "type": "string"
+                  },
+                  "editorName": {
+                    "type": "null"
+                  },
+                  "filialeId": {
+                    "type": "null"
+                  },
+                  "filialeName": {
+                    "type": "null"
+                  },
+                  "mailFooter": {
+                    "type": "null"
+                  },
+                  "mailHeader": {
+                    "type": "null"
+                  },
+                  "orderDate": {
+                    "type": "null"
+                  },
+                  "timestampUpdated": {
+                    "type": "null"
+                  },
+                  "orderQuantity": {
+                    "type": "null"
+                  },
+                  "orderStateDescription": {
+                    "type": "null"
+                  },
+                  "orderStateId": {
+                    "type": "null"
+                  },
+                  "orderValue": {
+                    "type": "null"
+                  },
+                  "paymentTermsId": {
+                    "type": "null"
+                  },
+                  "stockLocationId": {
+                    "type": "null"
+                  },
+                  "supplierAddressId": {
+                    "type": "null"
+                  },
+                  "supplierContactId": {
+                    "type": "null"
+                  },
+                  "supplierCustomerCustomerNumber": {
+                    "type": "null"
+                  },
+                  "supplierCustomerId": {
+                    "type": "null"
+                  },
+                  "supplierId": {
+                    "type": "string"
+                  },
+                  "supplierName": {
+                    "type": "null"
+                  },
+                  "supplierPhoneNumberId": {
+                    "type": "null"
+                  },
+                  "supplierEmail": {
+                    "type": "null"
+                  },
+                  "supplierEmailSupplierId": {
+                    "type": "null"
+                  },
+                  "supplierEmailContactId": {
+                    "type": "null"
+                  },
+                  "orderArrivalBookingState": {
+                    "type": "null"
+                  },
+                  "invoiceStatus": {
+                    "type": "null"
+                  },
+                  "sumInvoiceAmountNet": {
+                    "type": "null"
+                  },
+                  "costCenterId": {
+                    "type": "null"
+                  },
+                  "supplierDivision": {
+                    "type": "null"
+                  },
+                  "trackingNumber": {
+                    "type": "null"
+                  },
+                  "trackingLink": {
+                    "type": "null"
+                  },
+                  "customerId": {
+                    "type": "null"
+                  },
+                  "customerDeliveryAddressId": {
+                    "type": "null"
+                  },
+                  "customerPhoneNumber": {
+                    "type": "null"
+                  },
+                  "companyPhoneNumber": {
+                    "type": "null"
+                  },
+                  "companyPhoneNumberBranchId": {
+                    "type": "null"
+                  },
+                  "companyFaxConnection": {
+                    "type": "null"
+                  },
+                  "companyFaxConnectionBranchId": {
+                    "type": "null"
+                  },
+                  "companyEmail": {
+                    "type": "null"
+                  },
+                  "companyEmailBranchId": {
+                    "type": "null"
+                  },
+                  "comment": {
+                    "type": "null"
+                  },
+                  "desiredDate": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "id",
+                  "number",
+                  "active",
+                  "orderingPlatform",
+                  "orderType",
+                  "editorId",
+                  "supplierId"
+                ]
+              }
+            }
+          }
+        }
       }
     },
     "/apigateway/wawi/orders/{uuid}/email": {
@@ -33210,6 +34096,36 @@
                     "supplierId",
                     "editorId",
                     "filialeId"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Recorded response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "timestamp",
+                    "status",
+                    "error",
+                    "path"
                   ]
                 }
               }
@@ -34076,7 +34992,31 @@
             }
           },
           {
+            "name": "keywords",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
             "in": "query",
             "required": false,
             "schema": {
