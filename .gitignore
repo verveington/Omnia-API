@@ -1,0 +1,44 @@
+.DS_Store
+.claude/
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Local secrets and machine-specific config
+.env
+.env.*
+!.env.example
+
+# Raw recordings and generated media
+playwright-recorder/captures/
+docs/recordings/video-frames/
+*.mov
+*.mp4
+*.webm
+*.csv
+
+# Optica Omnia desktop application binaries/resources
+/Optica Omnia.exe
+/Uninstall Optica Omnia.exe
+/LICENSE.electron.txt
+/LICENSES.chromium.html
+/resources/
+/locales/
+/tools/
+/tmp/
+/chrome_100_percent.pak
+/chrome_200_percent.pak
+/resources.pak
+/snapshot_blob.bin
+/v8_context_snapshot.bin
+/vk_swiftshader_icd.json
+/environment.json
+/od_bon_log.txt
+/*.dll
+/*.dat
+/*.asar
+/*.bin
+
+# Generated TypeScript build artifacts
+/companion-app/vite.config.js
+/companion-app/vite.config.d.ts
