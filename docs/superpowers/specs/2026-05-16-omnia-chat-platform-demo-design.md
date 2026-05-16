@@ -4,6 +4,8 @@
 
 Die neue Plattform ist ein separates Webprojekt fuer einen Omnia-Chatbot. Der Demo-MVP arbeitet zuerst mit Mockdaten und simulierten Omnia-Tools. Er soll zeigen, wie Benutzer per Chat Kunden, Vorgaenge und Bestellungen suchen oder vorbereiten koennen, ohne sofort produktiv gegen Omnia zu schreiben.
 
+Die Chat-KI soll lokal betreibbar sein. Der MVP darf nicht von einer Cloud-KI abhaengen.
+
 ## Produktentscheidung
 
 Wir starten mit Variante B: Chat mit Omnia-Kontext-Cockpit.
@@ -20,7 +22,7 @@ Diese Struktur ist bewusst kontrollierter als ein reiner Chat. Der Benutzer soll
 
 ### Chat
 
-Der Chat versteht fuer den Demo-MVP feste Intent-Muster:
+Der Chat versteht fuer den Demo-MVP feste Intent-Muster und soll optional ueber eine lokale Chat-KI laufen:
 
 - Kunden suchen: "Suche Kunde Mustermann"
 - Vorgang suchen: "Zeig mir Vorgang 18581"
@@ -30,6 +32,8 @@ Der Chat versteht fuer den Demo-MVP feste Intent-Muster:
 - Omnia-Oeffnung simulieren: "In Omnia oeffnen"
 
 Der Chat soll nicht behaupten, dass eine echte Omnia-Aktion ausgefuehrt wurde, solange er im Demo-Modus laeuft.
+
+Wenn die lokale KI nicht verfuegbar ist, soll der MVP mit einem regelbasierten Intent-Parser weiter funktionieren.
 
 ### Kontext-Cockpit
 
@@ -96,6 +100,62 @@ Der Chatbot darf nicht direkt auf Daten schreiben. Er ruft serverseitige Tools a
 - `openInOmnia(entityType, entityId)`
 
 Im Demo-MVP sind alle Tools deterministisch und mockbasiert. Spaeter koennen dieselben Toolnamen auf die echte Omnia-BFF-Schicht gemappt werden.
+
+## Lokale KI-Schicht
+
+Die KI-Anbindung wird provider-neutral gebaut. Der Chat-Server spricht gegen ein lokales, OpenAI-kompatibles Chat-Endpoint oder einen lokalen Adapter. Geeignete lokale Laufzeiten sind z. B. Ollama, LM Studio oder ein eigener lokaler Inferenzdienst.
+
+Die lokale KI darf nur Vorschlaege machen:
+
+- Intent erkennen
+- Suchbegriffe extrahieren
+- Entitaeten aus Benutzereingaben strukturieren
+- eine naechste Aktion vorschlagen
+- Rueckfragen formulieren
+
+Die lokale KI darf keine Omnia-Aktion direkt ausfuehren. Jede Tool-Ausfuehrung laeuft ueber das Backend und wird gegen feste Schemas validiert.
+
+### Lokales LLM-Gateway
+
+Das BFF bekommt ein `llm-gateway` mit austauschbarer Implementierung:
+
+- `local-openai-compatible`: sendet an eine lokale `/v1/chat/completions`-Schnittstelle.
+- `rule-based`: fallback fuer Demo und Tests ohne KI-Modell.
+
+Konfiguration:
+
+- `CHAT_LLM_PROVIDER=rule-based|local-openai-compatible`
+- `CHAT_LLM_BASE_URL=http://127.0.0.1:11434/v1` oder ein anderer lokaler Endpoint
+- `CHAT_LLM_MODEL=<lokales-modell>`
+
+Der Rest der Anwendung spricht nur mit dem Gateway und kennt den konkreten lokalen KI-Anbieter nicht.
+
+### Strukturierte KI-Ausgabe
+
+Die KI soll kein freies Tool-JSON ungeprueft ausfuehren. Erwartet wird ein strikt validiertes Format:
+
+```json
+{
+  "intent": "search_cases",
+  "confidence": 0.82,
+  "arguments": {
+    "query": "18581"
+  },
+  "requiresConfirmation": false,
+  "assistantText": "Ich suche nach Vorgang 18581."
+}
+```
+
+Wenn die Ausgabe ungueltig ist, nutzt der Chatbot eine Rueckfrage statt einer Aktion.
+
+### Datenschutz
+
+Bei lokaler KI bleiben Chatverlauf und Omnia-Kontext lokal. Fuer den spaeteren Live-Betrieb gilt:
+
+- keine Cloud-Uebertragung von Gesundheits-, Kunden- oder Versicherungsdaten
+- lokaler Modellprozess und BFF laufen im selben lokalen Netzwerk oder auf demselben Rechner
+- Tool-Ergebnisse werden vor der KI-Antwort auf das notwendige Minimum reduziert
+- Audit speichert Aktionen, nicht komplette sensible Prompts
 
 ## Omnia-Oeffnung
 
@@ -177,7 +237,7 @@ Frontend und BFF laufen fuer den Demo-MVP lokal. Das BFF bleibt die einzige Stel
 ## Nicht im MVP
 
 - echte Omnia-Schreibzugriffe
-- echte LLM-Anbindung
+- Cloud-LLM-Pflicht
 - echte Benutzerverwaltung
 - echter E-Mail-Versand
 - Wareneingang buchen
@@ -188,6 +248,7 @@ Frontend und BFF laufen fuer den Demo-MVP lokal. Das BFF bleibt die einzige Stel
 
 - Benutzer kann per Chat Kunden und Vorgaenge in Demo-Daten suchen.
 - Kontextspalte aktualisiert sich passend zum Chat.
+- Chat laeuft ohne Cloud-KI ueber regelbasierten Parser oder lokale KI-Konfiguration.
 - Eine Bestellung kann aus einer bestellbereiten Lieferantengruppe simuliert erzeugt werden.
 - Eine Bestellung mit fehlender PZN wird blockiert.
 - Jede bestaetigte oder blockierte Aktion erscheint im Audit.
@@ -196,5 +257,5 @@ Frontend und BFF laufen fuer den Demo-MVP lokal. Das BFF bleibt die einzige Stel
 ## Offene Entscheidungen vor Implementierung
 
 - Projektname: vorgeschlagen `omnia-chat-platform`.
-- Soll der Demo-MVP ohne echtes LLM nur mit Intent-Regeln starten oder bereits eine OpenAI-kompatible Chat-Abstraktion vorbereiten?
+- Lokale KI-Laufzeit fuer die erste echte KI-Anbindung: Ollama, LM Studio oder anderer OpenAI-kompatibler lokaler Dienst.
 - Soll die UI zuerst Desktop-only sein oder sofort mobil nutzbar?
