@@ -31,6 +31,7 @@ const server = http.createServer(async (req, res) => {
       error: {
         message: status === 500 ? "Internal server error" : error.message,
         status,
+        ...(error.details ? { details: error.details } : {}),
       },
     });
     if (status === 500) {
@@ -166,6 +167,17 @@ async function route(req, res) {
     const supplierExport = procurementService.getSupplierExport(record, decodeURIComponent(supplierExportMatch[2]));
     const file = await exportService.createSupplierExport(supplierExport, exportFormat(url));
     return sendBuffer(res, 200, file.body, attachmentHeaders(file));
+  }
+
+  const supplierOrderMatch = url.pathname.match(/^\/api\/procurement\/cases\/([^/]+)\/suppliers\/([^/]+)\/orders$/);
+  if (req.method === "POST" && supplierOrderMatch) {
+    const record = await procurementService.getCase(session, decodeURIComponent(supplierOrderMatch[1]));
+    const result = await procurementService.createSupplierOrder(
+      session,
+      record,
+      decodeURIComponent(supplierOrderMatch[2]),
+    );
+    return sendJson(res, 201, { data: result });
   }
 
   return sendJson(res, 404, { error: { message: "Not found", status: 404 } });

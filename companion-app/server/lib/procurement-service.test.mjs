@@ -75,6 +75,91 @@ test("keeps proposals exportable and marks readiness when PZN cannot be resolved
   });
 });
 
+test("creates a mock Omnia order from a ready supplier group", async () => {
+  const service = createProcurementService();
+  const record = await service.getCase({ source: "mock" }, "proc-case-18581");
+
+  const result = await service.createSupplierOrder({ source: "mock" }, record, "supplier-medcomplett");
+
+  assert.equal(result.mode, "mock");
+  assert.equal(result.order.supplierId, "supplier-medcomplett");
+  assert.equal(result.order.supplierName, "MedComplett GmbH");
+  assert.equal(result.order.caseNumber, "18581");
+  assert.deepEqual(result.proposalIds, ["proposal-18581-1"]);
+  assert.deepEqual(result.order.positions.map((position) => position.pzn), ["12345678"]);
+});
+
+test("blocks supplier order creation when a proposal is not ready", async () => {
+  await withDemoProcurementSnapshot(async () => {
+    demoData.procurementCases[1].proposals[0].pzn = "";
+    demoData.articleDetailsById = {};
+
+    const service = createProcurementService();
+    const record = await service.getCase({ source: "mock" }, "proc-case-18542");
+
+    await assert.rejects(
+      () => service.createSupplierOrder({ source: "mock" }, record, "supplier-medcomplett"),
+      (error) => {
+        assert.equal(error.status, 422);
+        assert.match(error.message, /Bestellung kann nicht erzeugt werden/);
+        assert.deepEqual(error.details.map((detail) => detail.code), ["pzn_missing"]);
+        return true;
+      },
+    );
+  });
+});
+
+test("creates a live Omnia order with explicit supplier id and proposal selection", async () => {
+  const calls = [];
+  const service = createProcurementService({
+    omniaClient: {
+      async request(_session, request) {
+        calls.push(request);
+        if (request.path === "/apigateway/wawi/order-proposals/to-order") {
+          return { ok: true };
+        }
+        if (request.path === "/apigateway/wawi/orders/from-proposal") {
+          return { id: "order-live-1", number: "5001", supplierId: "supplier-medcomplett" };
+        }
+        if (request.path === "/apigateway/wawi/orders/order-live-1") {
+          return { id: "order-live-1", number: "5001", supplierName: "MedComplett GmbH" };
+        }
+        if (request.path === "/apigateway/wawi/orders/order-live-1/positions") {
+          return [{ id: "pos-1", articleNumber: "ART-10001", pzn: "12345678", quantity: 5, unit: "Packung" }];
+        }
+        throw new Error(`unexpected path ${request.path}`);
+      },
+    },
+  });
+  const record = await service.getCase({ source: "mock" }, "proc-case-18581");
+
+  const result = await service.createSupplierOrder(
+    { source: "live", omniaAccessToken: "token" },
+    record,
+    "supplier-medcomplett",
+  );
+
+  assert.equal(result.mode, "live");
+  assert.equal(result.order.number, "5001");
+  assert.deepEqual(
+    calls.map((call) => [call.method, call.path]),
+    [
+      ["POST", "/apigateway/wawi/order-proposals/to-order"],
+      ["POST", "/apigateway/wawi/orders/from-proposal"],
+      ["GET", "/apigateway/wawi/orders/order-live-1"],
+      ["GET", "/apigateway/wawi/orders/order-live-1/positions"],
+    ],
+  );
+  assert.deepEqual(calls[1].body, {
+    proposals: {
+      includeAll: false,
+      selections: ["proposal-18581-1"],
+      filters: null,
+    },
+    supplierId: "supplier-medcomplett",
+  });
+});
+
 async function withDemoProcurementSnapshot(run) {
   const procurementCases = structuredClone(demoData.procurementCases);
   const articleDetailsById = structuredClone(demoData.articleDetailsById ?? {});

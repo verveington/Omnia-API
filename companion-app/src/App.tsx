@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import type { AuditEvent, BootstrapData, CaseRecord, ModuleId, ProcurementCase, SessionInfo } from "./core/types";
-import { getBootstrap, getSession, login, logout } from "./api/client";
+import type {
+  AuditEvent,
+  BootstrapData,
+  CaseRecord,
+  ModuleId,
+  ProcurementCase,
+  ProcurementSupplierOrderResult,
+  SessionInfo,
+} from "./core/types";
+import { createProcurementSupplierOrder, getBootstrap, getSession, login, logout } from "./api/client";
 import { AppShell } from "./components/AppShell";
 import { CasesModule } from "./features/cases/CasesModule";
 import { OrdersModule } from "./features/orders/OrdersModule";
@@ -104,6 +112,10 @@ export default function App() {
     setStatus("ready");
   }
 
+  async function handleCreateSupplierOrder(caseId: string, supplierId: string): Promise<ProcurementSupplierOrderResult> {
+    return createProcurementSupplierOrder(caseId, supplierId);
+  }
+
   if (status === "checking") {
     return (
       <main className="loading-screen">
@@ -147,6 +159,7 @@ export default function App() {
           selectedCase={selectedProcurementCase}
           onSelectCase={(record: ProcurementCase) => setSelectedProcurementCaseId(record.id)}
           onAction={recordAction}
+          onCreateSupplierOrder={handleCreateSupplierOrder}
         />
       ) : null}
 

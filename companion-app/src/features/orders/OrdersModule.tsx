@@ -1,18 +1,27 @@
-import { Download, FileSpreadsheet, FileText, TableProperties } from "lucide-react";
-import type { ProcurementCase, ProcurementProposalItem, SupplierProposalGroup } from "../../core/types";
+import { CheckCircle2, Download, FileSpreadsheet, FileText, ShoppingCart, TableProperties } from "lucide-react";
+import { useState } from "react";
+import type {
+  ProcurementCase,
+  ProcurementOrderValidationDetail,
+  ProcurementProposalItem,
+  ProcurementSupplierOrderResult,
+  SupplierProposalGroup,
+} from "../../core/types";
 import { procurementCaseExportUrl, procurementSupplierExportUrl } from "../../api/client";
-import { ActionLink, Metric, SectionHeader, StatusBadge } from "../../components/ui";
+import { ActionButton, ActionLink, Metric, SectionHeader, StatusBadge } from "../../components/ui";
 
 export function OrdersModule({
   procurementCases,
   selectedCase,
   onSelectCase,
   onAction,
+  onCreateSupplierOrder,
 }: {
   procurementCases: ProcurementCase[];
   selectedCase: ProcurementCase;
   onSelectCase: (record: ProcurementCase) => void;
   onAction: (action: string, target: string) => void;
+  onCreateSupplierOrder: (caseId: string, supplierId: string) => Promise<ProcurementSupplierOrderResult>;
 }) {
   const proposals = selectedCase.proposals ?? [];
   const supplierGroups = selectedCase.supplierGroups ?? [];
@@ -112,8 +121,9 @@ export function OrdersModule({
             <SupplierGroupCard
               caseId={selectedCase.id}
               group={group}
-              key={group.supplierId}
+              key={`${selectedCase.id}-${group.supplierId}`}
               onAction={onAction}
+              onCreateSupplierOrder={onCreateSupplierOrder}
             />
           ))}
         </div>
@@ -126,12 +136,36 @@ function SupplierGroupCard({
   caseId,
   group,
   onAction,
+  onCreateSupplierOrder,
 }: {
   caseId: string;
   group: SupplierProposalGroup;
   onAction: (action: string, target: string) => void;
+  onCreateSupplierOrder: (caseId: string, supplierId: string) => Promise<ProcurementSupplierOrderResult>;
 }) {
   const blockedCount = group.items.filter((item) => item.procurementReadiness !== "ready_to_order").length;
+  const [busy, setBusy] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState<ProcurementSupplierOrderResult | null>(null);
+  const [validationDetails, setValidationDetails] = useState<ProcurementOrderValidationDetail[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  async function createOrder() {
+    setBusy(true);
+    setErrorMessage(null);
+    setValidationDetails([]);
+    try {
+      const result = await onCreateSupplierOrder(caseId, group.supplierId);
+      setCreatedOrder(result);
+      onAction("Bestellung erzeugt", `Bestellung ${result.order.number}`);
+    } catch (error) {
+      const details = getValidationDetails(error);
+      setValidationDetails(details);
+      setErrorMessage(error instanceof Error ? error.message : "Bestellung konnte nicht erzeugt werden");
+      onAction("Bestellung nicht erzeugt", group.supplierName);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <article className="supplier-group">
@@ -139,8 +173,28 @@ function SupplierGroupCard({
         <strong>{group.supplierName}</strong>
         <span>{group.itemCount} Positionen</span>
         {blockedCount > 0 ? <StatusBadge tone="red">{blockedCount} nicht bereit</StatusBadge> : null}
+        {createdOrder ? (
+          <div className="supplier-order-result">
+            <CheckCircle2 size={16} />
+            <span>Bestellung {createdOrder.order.number} erzeugt</span>
+          </div>
+        ) : null}
+        {errorMessage ? (
+          <div className="supplier-order-error">
+            <strong>{errorMessage}</strong>
+            {validationDetails.map((detail) => (
+              <span key={`${detail.proposalId}-${detail.code}`}>
+                {detail.articleNumber || detail.description || detail.proposalId}: {detail.message}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
       <div className="export-actions">
+        <ActionButton disabled={busy} onClick={createOrder}>
+          <ShoppingCart size={16} />
+          {busy ? "Erzeuge" : "Bestellung"}
+        </ActionButton>
         <ActionLink
           href={procurementSupplierExportUrl(caseId, group.supplierId, "xlsx")}
           onClick={() => onAction("Lieferantenexport Excel", group.supplierName)}
@@ -168,6 +222,13 @@ function SupplierGroupCard({
       </div>
     </article>
   );
+}
+
+function getValidationDetails(error: unknown): ProcurementOrderValidationDetail[] {
+  if (error && typeof error === "object" && "details" in error && Array.isArray(error.details)) {
+    return error.details as ProcurementOrderValidationDetail[];
+  }
+  return [];
 }
 
 function ReadinessBadge({ proposal }: { proposal: ProcurementProposalItem }) {

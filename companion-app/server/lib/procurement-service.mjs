@@ -42,10 +42,34 @@ export function createProcurementService({ omniaClient } = {}) {
     };
   }
 
+  async function createSupplierOrder(session, record, supplierId) {
+    const supplier = getSupplierGroup(record, supplierId);
+    const proposalIds = supplier.items.map((item) => item.id);
+    const validationErrors = validateSupplierOrder(record, supplier);
+
+    if (validationErrors.length) {
+      const error = new Error("Bestellung kann nicht erzeugt werden");
+      error.status = 422;
+      error.details = validationErrors;
+      throw error;
+    }
+
+    if (session?.source === "live" && session?.omniaAccessToken && omniaClient) {
+      return createLiveSupplierOrder(session, record, supplier, proposalIds);
+    }
+
+    return {
+      mode: "mock",
+      proposalIds,
+      order: createMockOrder(record, supplier),
+    };
+  }
+
   return {
     listCases,
     getCase,
     getSupplierExport,
+    createSupplierOrder,
   };
 
   async function toProcurementCase(record, session) {
@@ -123,6 +147,151 @@ export function createProcurementService({ omniaClient } = {}) {
 
     return { lookupFailed: true, source: "omnia-article-details" };
   }
+
+  async function createLiveSupplierOrder(session, record, supplier, proposalIds) {
+    const selection = {
+      includeAll: false,
+      selections: proposalIds,
+      filters: null,
+    };
+
+    await omniaClient.request(session, {
+      method: "POST",
+      path: "/apigateway/wawi/order-proposals/to-order",
+      body: selection,
+    });
+
+    const createdOrder = await omniaClient.request(session, {
+      method: "POST",
+      path: "/apigateway/wawi/orders/from-proposal",
+      body: {
+        proposals: selection,
+        supplierId: supplier.supplierId,
+      },
+    });
+
+    const orderId = normalizeText(createdOrder?.id || createdOrder?.orderId || createdOrder?.uuid);
+    const hydratedOrder = orderId
+      ? await omniaClient.request(session, { method: "GET", path: `/apigateway/wawi/orders/${encodeURIComponent(orderId)}` })
+      : createdOrder;
+    const positions = orderId
+      ? await omniaClient.request(session, {
+          method: "GET",
+          path: `/apigateway/wawi/orders/${encodeURIComponent(orderId)}/positions`,
+        })
+      : supplier.items;
+
+    return {
+      mode: "live",
+      proposalIds,
+      order: normalizeLiveOrder(record, supplier, hydratedOrder || createdOrder, positions),
+    };
+  }
+}
+
+function getSupplierGroup(record, supplierId) {
+  const supplier = record.supplierGroups.find((group) => group.supplierId === supplierId);
+  if (!supplier) {
+    const error = new Error("Lieferantengruppe nicht gefunden");
+    error.status = 404;
+    throw error;
+  }
+  return supplier;
+}
+
+function validateSupplierOrder(record, supplier) {
+  const errors = [];
+  for (const item of supplier.items) {
+    addReadinessErrors(errors, item);
+    if (!normalizeText(item.articleNumber)) addValidationError(errors, item, "article_number_missing", "Artikelnummer fehlt");
+    if (!normalizeText(item.pzn)) addValidationError(errors, item, "pzn_missing", "PZN fehlt");
+    if (!normalizeText(item.unit)) addValidationError(errors, item, "unit_missing", "Einheit fehlt");
+    if (!Number.isFinite(Number(item.quantity)) || Number(item.quantity) <= 0) {
+      addValidationError(errors, item, "quantity_invalid", "Menge muss groesser 0 sein");
+    }
+    if (item.supplierId !== supplier.supplierId) {
+      addValidationError(errors, item, "supplier_mismatch", "Position gehoert nicht zur Lieferantengruppe");
+    }
+  }
+
+  if (!normalizeText(record.number)) {
+    errors.push({ code: "case_number_missing", message: "Vorgangsnummer fehlt" });
+  }
+
+  return errors;
+}
+
+function addReadinessErrors(errors, item) {
+  if (item.procurementReadiness === "pzn_missing") {
+    addValidationError(errors, item, "pzn_missing", "PZN fehlt");
+  }
+  if (item.procurementReadiness === "supplier_missing") {
+    addValidationError(errors, item, "supplier_missing", "Lieferant fehlt");
+  }
+}
+
+function addValidationError(errors, item, code, message) {
+  if (errors.some((error) => error.proposalId === item.id && error.code === code)) return;
+  errors.push({
+    code,
+    message,
+    proposalId: item.id,
+    articleNumber: item.articleNumber,
+    description: item.description,
+  });
+}
+
+function createMockOrder(record, supplier) {
+  return {
+    id: `mock-order-${record.number}-${safeOrderKey(supplier.supplierId)}`,
+    number: `M-${record.number}-${String(record.supplierGroups.findIndex((group) => group.supplierId === supplier.supplierId) + 1).padStart(2, "0")}`,
+    caseId: record.id,
+    caseNumber: record.number,
+    supplierId: supplier.supplierId,
+    supplierName: supplier.supplierName,
+    state: "created",
+    positions: supplier.items.map(toOrderPosition),
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function normalizeLiveOrder(record, supplier, order, positions) {
+  return {
+    id: order?.id || order?.orderId || order?.uuid || "",
+    number: order?.number || order?.orderNumber || "",
+    caseId: record.id,
+    caseNumber: record.number,
+    supplierId: order?.supplierId || supplier.supplierId,
+    supplierName: order?.supplierName || supplier.supplierName,
+    state: order?.orderStateDescription || order?.state || "created",
+    positions: asArrayContent(positions).map((position) => ({
+      id: position.id || position.positionId || "",
+      articleNumber: position.articleNumber || position.orderNr || "",
+      pzn: position.pzn || "",
+      description: position.description || position.articleDescription || "",
+      quantity: position.quantity ?? position.orderQuantity ?? "",
+      unit: position.unit || position.quantityUnit || "",
+    })),
+    raw: order,
+  };
+}
+
+function toOrderPosition(item) {
+  return {
+    id: item.id,
+    articleId: item.articleId,
+    articleNumber: item.articleNumber,
+    pzn: item.pzn,
+    description: item.description,
+    quantity: item.quantity,
+    unit: item.unit,
+  };
+}
+
+function asArrayContent(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.content)) return payload.content;
+  return [];
 }
 
 function groupBySupplier(proposals) {
@@ -170,4 +339,8 @@ function parseEuro(value) {
 
 function formatEuro(value) {
   return `${value.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
+}
+
+function safeOrderKey(value) {
+  return String(value).replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase();
 }

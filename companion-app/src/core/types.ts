@@ -123,6 +123,40 @@ export interface SupplierProposalGroup {
   items: ProcurementProposalItem[];
 }
 
+export interface ProcurementOrderPosition {
+  id: string;
+  articleNumber: string;
+  pzn: string;
+  description: string;
+  quantity: number | string;
+  unit: string;
+}
+
+export interface ProcurementCreatedOrder {
+  id: string;
+  number: string;
+  caseId: string;
+  caseNumber: string;
+  supplierId: string;
+  supplierName: string;
+  state: string;
+  positions: ProcurementOrderPosition[];
+}
+
+export interface ProcurementOrderValidationDetail {
+  code: string;
+  message: string;
+  proposalId?: string;
+  articleNumber?: string;
+  description?: string;
+}
+
+export interface ProcurementSupplierOrderResult {
+  mode: "mock" | "live";
+  proposalIds: string[];
+  order: ProcurementCreatedOrder;
+}
+
 export interface ProcurementCase {
   id: string;
   salesProcessId: string;

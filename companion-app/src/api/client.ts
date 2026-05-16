@@ -1,18 +1,30 @@
-import type { BootstrapData, CaseRecord, GoodsReceiptRecord, OrderRecord, ProcurementCase, SessionInfo } from "../core/types";
+import type {
+  BootstrapData,
+  CaseRecord,
+  GoodsReceiptRecord,
+  OrderRecord,
+  ProcurementCase,
+  ProcurementOrderValidationDetail,
+  ProcurementSupplierOrderResult,
+  SessionInfo,
+} from "../core/types";
 
 interface ApiErrorPayload {
   error?: {
+    details?: ProcurementOrderValidationDetail[];
     message?: string;
     status?: number;
   };
 }
 
 export class ApiError extends Error {
+  details: ProcurementOrderValidationDetail[];
   status: number;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, details: ProcurementOrderValidationDetail[] = []) {
     super(message);
     this.name = "ApiError";
+    this.details = details;
     this.status = status;
   }
 }
@@ -73,6 +85,17 @@ export function procurementSupplierExportUrl(caseId: string, supplierId: string,
   return `/api/procurement/cases/${encodeURIComponent(caseId)}/suppliers/${encodeURIComponent(supplierId)}/export?format=${format}`;
 }
 
+export async function createProcurementSupplierOrder(
+  caseId: string,
+  supplierId: string,
+): Promise<ProcurementSupplierOrderResult> {
+  const result = await request<{ data: ProcurementSupplierOrderResult }>(
+    `/api/procurement/cases/${encodeURIComponent(caseId)}/suppliers/${encodeURIComponent(supplierId)}/orders`,
+    { method: "POST" },
+  );
+  return result.data;
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(path, {
     ...init,
@@ -86,7 +109,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const payload = (await response.json().catch(() => ({}))) as ApiErrorPayload;
 
   if (!response.ok) {
-    throw new ApiError(payload.error?.message || "API request failed", response.status);
+    throw new ApiError(payload.error?.message || "API request failed", response.status, payload.error?.details || []);
   }
 
   return payload as T;

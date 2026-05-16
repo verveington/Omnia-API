@@ -643,6 +643,46 @@ tbody tr:last-child td {
   margin-top: 8px;
 }
 
+.supplier-order-result,
+.supplier-order-error {
+  margin-top: 9px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.supplier-order-result {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 7px 9px;
+  color: var(--accent-dark);
+  background: var(--green-soft);
+  font-weight: 800;
+}
+
+.supplier-order-result span {
+  margin: 0;
+  color: inherit;
+}
+
+.supplier-order-error {
+  display: grid;
+  max-width: 560px;
+  gap: 4px;
+  padding: 9px 10px;
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+.supplier-order-error strong,
+.supplier-order-error span {
+  color: inherit;
+}
+
+.supplier-order-error span {
+  margin: 0;
+}
+
 .procurement-row > span:last-child {
   display: grid;
   justify-items: end;
