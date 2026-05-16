@@ -80,7 +80,6 @@ export function OrdersModule({
                 <th>Status</th>
                 <th>Beschreibung</th>
                 <th>Menge</th>
-                <th>Wert</th>
               </tr>
             </thead>
             <tbody>
@@ -96,7 +95,6 @@ export function OrdersModule({
                   <td>
                     {proposal.quantity} {proposal.unit}
                   </td>
-                  <td>{proposal.value}</td>
                 </tr>
               ))}
             </tbody>
@@ -139,9 +137,7 @@ function SupplierGroupCard({
     <article className="supplier-group">
       <div>
         <strong>{group.supplierName}</strong>
-        <span>
-          {group.itemCount} Positionen · {group.totalValue}
-        </span>
+        <span>{group.itemCount} Positionen</span>
         {blockedCount > 0 ? <StatusBadge tone="red">{blockedCount} nicht bereit</StatusBadge> : null}
       </div>
       <div className="export-actions">

@@ -3,24 +3,22 @@ import PDFDocument from "pdfkit";
 import { stringify } from "csv-stringify/sync";
 
 const CASE_COLUMNS = [
-  { key: "supplierName", header: "Lieferant" },
-  { key: "articleNumber", header: "Artikelnummer" },
-  { key: "pzn", header: "PZN" },
-  { key: "description", header: "Beschreibung" },
-  { key: "quantity", header: "Menge" },
-  { key: "unit", header: "Einheit" },
-  { key: "value", header: "Wert" },
+  { key: "supplierName", header: "Lieferant", pdfWidth: 128 },
+  { key: "articleNumber", header: "Artikelnummer", pdfWidth: 96 },
+  { key: "pzn", header: "PZN", pdfWidth: 82 },
+  { key: "description", header: "Beschreibung", pdfWidth: 340 },
+  { key: "quantity", header: "Menge", pdfWidth: 58, align: "right" },
+  { key: "unit", header: "Einheit", pdfWidth: 58 },
 ];
 
 const SUPPLIER_COLUMNS = [
-  { key: "commission", header: "Kommission" },
-  { key: "caseNumber", header: "Vorgangsnummer" },
-  { key: "articleNumber", header: "Artikelnummer" },
-  { key: "pzn", header: "PZN" },
-  { key: "description", header: "Beschreibung" },
-  { key: "quantity", header: "Menge" },
-  { key: "unit", header: "Einheit" },
-  { key: "value", header: "Wert" },
+  { key: "commission", header: "Kommission", pdfWidth: 88 },
+  { key: "caseNumber", header: "Vorgangsnummer", pdfHeader: "Vorgang", pdfWidth: 76 },
+  { key: "articleNumber", header: "Artikelnummer", pdfWidth: 96 },
+  { key: "pzn", header: "PZN", pdfWidth: 82 },
+  { key: "description", header: "Beschreibung", pdfWidth: 340 },
+  { key: "quantity", header: "Menge", pdfWidth: 58, align: "right" },
+  { key: "unit", header: "Einheit", pdfWidth: 58 },
 ];
 
 export function createExportService() {
@@ -142,21 +140,21 @@ async function createSupplierWorkbook(supplierExport) {
 
 async function createCasePdf(record) {
   return createPdf((doc) => {
-    doc.fontSize(16).text(`Vorgang ${record.number}`, { underline: true });
-    doc.moveDown(0.6);
-    doc.fontSize(10).text(`Kunde: ${record.customer.displayName}`);
-    doc.text(`Lieferadresse: ${formatAddress(record.deliveryAddress)}`);
-    doc.moveDown();
+    writeDocumentHeader(doc, `Vorgang ${record.number}`, [
+      ["Kunde", record.customer.displayName],
+      ["Kundennummer", record.customer.customerNumber],
+      ["Lieferadresse", formatAddress(record.deliveryAddress)],
+    ]);
     writeRows(doc, CASE_COLUMNS, record.proposals);
   });
 }
 
 async function createSupplierPdf(supplierExport) {
   return createPdf((doc) => {
-    doc.fontSize(16).text(`Bestellvorschlag ${supplierExport.supplier.supplierName}`, { underline: true });
-    doc.moveDown(0.6);
-    doc.fontSize(10).text(`Vorgang: ${supplierExport.caseNumber}`);
-    doc.moveDown();
+    writeDocumentHeader(doc, `Bestellvorschlag ${supplierExport.supplier.supplierName}`, [
+      ["Vorgang", supplierExport.caseNumber],
+      ["Lieferant", supplierExport.supplier.supplierName],
+    ]);
     writeRows(doc, SUPPLIER_COLUMNS, supplierExport.rows);
   });
 }
@@ -164,7 +162,12 @@ async function createSupplierPdf(supplierExport) {
 function createPdf(write) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    const doc = new PDFDocument({ size: "A4", margin: 36 });
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margin: 32,
+      info: { Creator: "Omnia Companion" },
+    });
     doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
@@ -174,18 +177,123 @@ function createPdf(write) {
 }
 
 function addTable(sheet, columns, rows) {
-  sheet.columns = columns.map((column) => ({ header: column.header, key: column.key, width: column.key === "description" ? 38 : 18 }));
+  sheet.columns = columns.map((column) => ({ header: column.header, key: column.key, width: column.key === "description" ? 48 : 18 }));
   sheet.addRows(rows);
   sheet.getRow(1).font = { bold: true };
+  sheet.getRow(1).alignment = { vertical: "middle" };
+  sheet.views = [{ state: "frozen", ySplit: 1 }];
+  sheet.autoFilter = {
+    from: { row: 1, column: 1 },
+    to: { row: 1, column: columns.length },
+  };
+  for (const row of sheet.getRows(2, rows.length) || []) {
+    row.alignment = { vertical: "top", wrapText: true };
+  }
 }
 
 function writeRows(doc, columns, rows) {
-  const headers = columns.map((column) => column.header).join(" | ");
-  doc.fontSize(8).text(headers);
-  doc.moveDown(0.4);
-  for (const row of rows) {
-    doc.text(columns.map((column) => row[column.key]).join(" | "));
+  if (!rows.length) {
+    doc.font("Helvetica").fontSize(10).fillColor("#344054").text("Keine Positionen vorhanden.");
+    return;
   }
+
+  const table = {
+    x: doc.page.margins.left,
+    y: doc.y,
+    width: doc.page.width - doc.page.margins.left - doc.page.margins.right,
+    headerHeight: 24,
+    rowPaddingX: 5,
+    rowPaddingY: 6,
+  };
+  const normalizedColumns = normalizePdfColumns(columns, table.width);
+
+  let y = drawTableHeader(doc, table, normalizedColumns);
+  for (const row of rows) {
+    const rowHeight = getPdfRowHeight(doc, table, normalizedColumns, row);
+    if (y + rowHeight > doc.page.height - doc.page.margins.bottom) {
+      doc.addPage();
+      table.y = doc.page.margins.top;
+      y = drawTableHeader(doc, table, normalizedColumns);
+    }
+    drawTableRow(doc, table, normalizedColumns, row, y, rowHeight);
+    y += rowHeight;
+  }
+  doc.y = y + 8;
+}
+
+function writeDocumentHeader(doc, title, metadata) {
+  doc.font("Helvetica-Bold").fontSize(16).fillColor("#101828").text(title);
+  doc.moveDown(0.45);
+  doc.font("Helvetica").fontSize(9).fillColor("#344054");
+  for (const [label, value] of metadata) {
+    doc.font("Helvetica-Bold").text(`${label}: `, { continued: true });
+    doc.font("Helvetica").text(String(value || "-"));
+  }
+  doc.moveDown(0.9);
+}
+
+function normalizePdfColumns(columns, availableWidth) {
+  const configuredWidth = columns.reduce((sum, column) => sum + (column.pdfWidth || 0), 0);
+  const fallbackWidth = Math.floor(availableWidth / columns.length);
+  return columns.map((column) => ({
+    ...column,
+    width: column.pdfWidth || fallbackWidth,
+    scale: configuredWidth > availableWidth ? availableWidth / configuredWidth : 1,
+  })).map((column) => ({ ...column, width: Math.floor(column.width * column.scale) }));
+}
+
+function drawTableHeader(doc, table, columns) {
+  let x = table.x;
+  const y = table.y;
+  const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
+
+  doc.save();
+  doc.rect(table.x, y, tableWidth, table.headerHeight).fill("#eef2f6");
+  doc.strokeColor("#c8d0dc").lineWidth(0.7).rect(table.x, y, tableWidth, table.headerHeight).stroke();
+  doc.font("Helvetica-Bold").fontSize(8.5).fillColor("#1d2939");
+  for (const column of columns) {
+    doc.text(column.pdfHeader || column.header, x + table.rowPaddingX, y + 7, {
+      width: column.width - table.rowPaddingX * 2,
+      align: column.align || "left",
+      lineBreak: false,
+    });
+    x += column.width;
+  }
+  doc.restore();
+  return y + table.headerHeight;
+}
+
+function drawTableRow(doc, table, columns, row, y, height) {
+  let x = table.x;
+  doc.save();
+  doc.strokeColor("#d8dee8").lineWidth(0.5);
+  doc.font("Helvetica").fontSize(8.25).fillColor("#1d2939");
+  for (const column of columns) {
+    doc.rect(x, y, column.width, height).stroke();
+    doc.text(formatCell(row[column.key]), x + table.rowPaddingX, y + table.rowPaddingY, {
+      width: column.width - table.rowPaddingX * 2,
+      align: column.align || "left",
+      lineGap: 1,
+    });
+    x += column.width;
+  }
+  doc.restore();
+}
+
+function getPdfRowHeight(doc, table, columns, row) {
+  doc.font("Helvetica").fontSize(8.25);
+  const heights = columns.map((column) =>
+    doc.heightOfString(formatCell(row[column.key]), {
+      width: column.width - table.rowPaddingX * 2,
+      lineGap: 1,
+    }) + table.rowPaddingY * 2,
+  );
+  return Math.max(24, Math.ceil(Math.max(...heights)));
+}
+
+function formatCell(value) {
+  if (value === undefined || value === null || value === "") return "-";
+  return String(value);
 }
 
 function formatAddress(address) {

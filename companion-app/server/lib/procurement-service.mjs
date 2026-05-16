@@ -37,7 +37,6 @@ export function createProcurementService({ omniaClient } = {}) {
         description: item.description,
         quantity: item.quantity,
         unit: item.unit,
-        value: item.value,
         procurementReadiness: item.procurementReadiness,
       })),
     };
