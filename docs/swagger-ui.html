@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Optica Omnia Swagger API UI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+  <style>
+    body { margin: 0; background: #f6f7f9; color: #16202a; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .topbar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid #d8dee6; background: #ffffff; box-shadow: 0 8px 24px rgba(22, 32, 42, 0.08); }
+    h1 { margin: 0; font-size: 18px; line-height: 1.2; }
+    label { font-size: 12px; font-weight: 700; color: #647180; }
+    select { height: 34px; min-width: 260px; padding: 0 10px; border: 1px solid #d8dee6; border-radius: 6px; background: #fff; color: #16202a; font: inherit; font-size: 13px; }
+    .note { margin-left: auto; color: #647180; font-size: 12px; }
+    #swagger-ui { max-width: 1440px; margin: 0 auto; }
+    .fallback { max-width: 1200px; margin: 20px auto; padding: 16px; border: 1px solid #d8dee6; border-radius: 8px; background: #fff; }
+    .fallback input { width: 100%; height: 38px; margin-bottom: 12px; padding: 0 10px; border: 1px solid #d8dee6; border-radius: 6px; }
+    .fallback .endpoint { padding: 9px 0; border-top: 1px solid #edf0f3; }
+    code { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>Optica Omnia Swagger API UI</h1>
+    <label for="specSelect">Spec</label>
+    <select id="specSelect">
+      <option value="openapi.cumulative.json">Cumulative JSON mit Schemas</option>
+      <option value="openapi.generated.json">Generated JSON</option>
+      <option value="../openapi/omnia-observed.openapi.yaml">Observed YAML</option>
+    </select>
+    <div class="note">Interaktiv: Authorize und Try it out sind aktiv. Nur mit Testdaten verwenden.</div>
+  </div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+  <script>
+    const select = document.getElementById("specSelect");
+    let ui = null;
+
+    function renderSwagger(url) {
+      document.getElementById("swagger-ui").innerHTML = "";
+      if (window.SwaggerUIBundle) {
+        ui = SwaggerUIBundle({
+          url,
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          tryItOutEnabled: true,
+          supportedSubmitMethods: ["get", "post", "put", "patch", "delete"],
+          persistAuthorization: true,
+          parameterMacro: swaggerParameterDefault,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          layout: "StandaloneLayout",
+          requestInterceptor: (request) => {
+            request.credentials = "omit";
+            return request;
+          },
+        });
+        return;
+      }
+      renderFallback(url);
+    }
+
+    function swaggerParameterDefault(_operation, parameter) {
+      const location = String(parameter?.in || "");
+      if (location === "header" || location === "cookie") return undefined;
+      if (parameter?.example != null) return parameter.example;
+      const schema = parameter?.schema || {};
+      if (schema.default != null) return schema.default;
+      if (schema.example != null) return schema.example;
+
+      const name = String(parameter?.name || "").toLowerCase();
+      const type = Array.isArray(schema.type) ? schema.type.find((item) => item !== "null") : schema.type;
+      if (location === "path") return pathParameterDefault(name, schema);
+      if (type === "integer" || type === "number") return numericParameterDefault(name);
+      if (type === "boolean") return booleanParameterDefault(name);
+      if (type === "array") return stringParameterDefault(name, schema.items || schema);
+      return stringParameterDefault(name, schema);
+    }
+
+    function pathParameterDefault(name, schema) {
+      if (schema.format === "uuid" || name.includes("uuid")) return "00000000-0000-4000-8000-000000000000";
+      if (name.endsWith("id") || name.includes("id")) return "0";
+      return "test";
+    }
+
+    function numericParameterDefault(name) {
+      if (name === "size" || name === "limit" || name.includes("pagesize")) return 20;
+      if (name === "page" || name === "number" || name.includes("offset")) return 0;
+      if (name.includes("quantity") || name.includes("amount")) return 1;
+      return 0;
+    }
+
+    function booleanParameterDefault(name) {
+      if (name.includes("inactive") || name.includes("deleted") || name.includes("disabled")) return false;
+      return true;
+    }
+
+    function stringParameterDefault(name, schema) {
+      const known = {
+        active: "true",
+        page: "0",
+        size: "2000",
+        limit: "20",
+        paymenttypes: "SALE",
+        sort: "created,desc",
+        search: "Mustermann",
+        query: "Mustermann",
+        term: "Mustermann",
+        lastname: "Mustermann",
+        nachname: "Mustermann",
+        firstname: "Max",
+        vorname: "Max",
+        articlename: "Musterartikel",
+        article: "Musterartikel",
+        artikel: "Musterartikel",
+      };
+      if (known[name]) return known[name];
+      if (schema?.format === "uuid" || name.includes("uuid")) return "00000000-0000-4000-8000-000000000000";
+      if (name.endsWith("id") || name.includes("id")) return "0";
+      if (name.includes("date") || name.includes("datum")) return "2026-01-01";
+      if (name.includes("email") || name.includes("mail")) return "test@example.invalid";
+      if (name.includes("active")) return "true";
+      if (name.includes("size")) return "2000";
+      if (name.includes("page")) return "0";
+      if (name.includes("paymenttype")) return "SALE";
+      if (name.includes("customer") || name.includes("kunde")) return "Mustermann";
+      if (name.includes("article") || name.includes("artikel")) return "Musterartikel";
+      return "test";
+    }
+
+    function renderFallback(url) {
+      fetch(url)
+        .then((response) => response.json())
+        .then((spec) => {
+          const paths = spec.paths || {};
+          document.getElementById("swagger-ui").innerHTML =
+            '<div class="fallback"><h2>' + escapeHtml(spec.info?.title || "OpenAPI") + '</h2>' +
+            '<p>Swagger UI CDN konnte nicht geladen werden. Lokaler Read-only-Fallback fuer JSON-Spec.</p>' +
+            '<input id="fallbackSearch" type="search" placeholder="Endpoint suchen">' +
+            '<div id="fallbackList"></div></div>';
+          const render = () => {
+            const query = document.getElementById("fallbackSearch").value.toLowerCase();
+            const rows = [];
+            for (const [path, methods] of Object.entries(paths)) {
+              for (const method of Object.keys(methods)) {
+                const text = method.toUpperCase() + " " + path;
+                if (query && !text.toLowerCase().includes(query)) continue;
+                rows.push('<div class="endpoint"><strong>' + escapeHtml(method.toUpperCase()) + '</strong> <code>' + escapeHtml(path) + '</code></div>');
+              }
+            }
+            document.getElementById("fallbackList").innerHTML = rows.join("") || "<p>Keine Treffer.</p>";
+          };
+          document.getElementById("fallbackSearch").addEventListener("input", render);
+          render();
+        })
+        .catch((error) => {
+          document.getElementById("swagger-ui").innerHTML = '<div class="fallback">Spec konnte nicht geladen werden: ' + escapeHtml(error.message) + '</div>';
+        });
+    }
+
+    select.addEventListener("change", () => renderSwagger(select.value));
+    renderSwagger(select.value);
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1731 @@
+openapi: 3.1.0
+info:
+  title: Optica Omnia Observed API
+  version: 0.0.0-observed
+  description: Beobachtete, redacted Endpunkte aus lokalen Playwright-Logs. Unsichere Schemas bleiben TODO.
+servers:
+  - url: https://api2.optica-omnia.de
+    description: Observed host
+paths:
+  "/apigateway/accounting/bons":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [404]
+      responses:
+        "404":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/accounting/cash-book-entries/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [400]
+      responses:
+        "400":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/accounting/cash-books":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [500]
+      responses:
+        "500":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/accounting/fibu-accounts/settings":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 27
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/accounting/material-groups":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 24
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/accounting/payment-terms":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 66
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/accounting/payment-terms/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/article-kits/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/article/generate-labels/[REDACTED]/articles/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [404]
+      responses:
+        "404":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/computed-order-value/{id}":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 6
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/details/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [404]
+      responses:
+        "404":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/merchandise-management-setting":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/price-data":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 11
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/price-data/alternative-selling-prices":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/quantities":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 5
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/stock-data":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/supplier-assignments":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 22
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200, 400]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+        "400":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/[REDACTED]/supplier-assignments/has-main-supplier":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/merchandise-management-setting":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 25
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/articles/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 6
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/article-tenant/label-configurations/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 27
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/articletenantservice/article-kits/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 4
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/articletenantservice/articles/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 14
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/articletenantservice/articles/search/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/articletenantservice/articles/simple-search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 58
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/articletenantservice/bits-articles/producer-list":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 11
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/arzt-tenant/aerzte":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/arzt-tenant/aerzte/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 16
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/arzt-tenant/aerzte/[REDACTED]/notes":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 15
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/audit/changelogs":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/communicatorservice/reminders/dbopt":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 220
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/communicatorservice/tasks/by-process/count":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 4
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/country/countries":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 157
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/customerservice/customers/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 5
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/department/departments":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 102
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/document/archive-documents/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 10
+        statuses: [200, 400]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+        "400":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/document/documents/[REDACTED]/png-preview":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/document/documents/boilerplates/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/document/stored-documents":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 16
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/document/stored-documents/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/ekv/cost-estimates":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [200, 400]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+        "400":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/ekv/cost-estimates/latest-approved":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [400]
+      responses:
+        "400":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/enum-service/enums":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 157
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/file-archive/file-archive/load/files/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 122
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    head:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 6
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/filiale/filialen":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 193
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/filiale/filialen/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 24
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/filiale/filialen/[REDACTED]/addresses":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/filiale/filialen/[REDACTED]/institutionskennzeichen":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 16
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/filiale/filialen/[REDACTED]/institutionskennzeichen/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 157
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/filiale/filialen/[REDACTED]/receipt-settings":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 142
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/filiale/filialen/names":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/firma/companies/contact-opportunities":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 14
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/firma/companies/details":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 28
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/firma/companies/details/accountings":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 27
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/firma/companies/details/addresses":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/formservice/formulare/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/hilfsmittel/arten/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 16
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/hilfsmittel/hilfsmittel/retrieval":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 6
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/hilfsmittel/hilfsmittel/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/hilfsmittel/hilfsmittel/termine":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 11
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/hilfsmittel/hilfsmittel/traits":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 12
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/hilfsmittel/route-plannings":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 5
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kostentraeger-tenant/kostentraeger":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kostentraeger-tenant/kostentraeger/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 20
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kostentraeger-tenant/kostentraeger/[REDACTED]/addresses/conditional-prioritized-addresses":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kostentraeger-tenant/kostentraeger/[REDACTED]/notes":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 16
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kostentraeger-tenant/kostentraeger/cloud-status":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 18
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 45
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    put:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]/addresses":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 31
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]/addresses/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 12
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]/arzt":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 24
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]/contacts":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]/kostentraeger":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 33
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]/notes":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 23
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/[REDACTED]/notes/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    put:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/duplicate-check":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/kunden/customers/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 166
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/mail/gateway-configurations/user-mail-addresses":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 157
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/mail/mails/unread-number":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 595
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/navigation/navigations/details":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 145
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/navigationservice/external/countries":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/notification/notifications":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 156
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/notification/notifications/[REDACTED]/true":
+    patch:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/notification/notifications/all":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/price-position/price-positions/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/pricingservice/sales-positions":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 8
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/archived-salesprocess/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 5
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/art/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 16
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/dv-data/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 9
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/salesprocesses":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/salesprocesses/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 21
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    put:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 14
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/salesprocesses/[REDACTED]/delivery-notes":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/salesprocesses/[REDACTED]/notes":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 8
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/salesprocesses/calculate-prices":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 8
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/salesprocesses/kpi-statistics":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 65
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/sales/salesprocesses/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 158
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/salesprocessservice/dv-data/customer/[REDACTED]/dv-ids":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/salesprocessservice/invoices/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 43
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/salesprocessservice/recommendations":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/salesprocessservice/salesprocesses/customer/[REDACTED]/vorgang-ids":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/salesprocessservice/salesprocesses/vouchers/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 5
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/salesprocessservice/status/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Auftrag/Vorgang verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 124
+        statuses: [200, 500]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+        "500":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 59
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers/[REDACTED]/addresses":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers/[REDACTED]/contact-opportunities":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers/[REDACTED]/contacts":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers/[REDACTED]/customers":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 13
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers/list":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 9
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/supplier/suppliers/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/task/tasks/reminder-count":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 227
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/task/tasks/task-count":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 593
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/user-details":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 70
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/user/generic-list-column-states":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 158
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/user/users":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 32
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/user/users/[REDACTED]/dashboards":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 157
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/user/users/[REDACTED]/passwords":
+    put:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/user/users/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 42
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/userservice/companies/details/preferences":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 169
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/userservice/feature-toggles":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 187
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/userservice/metrics/user-login":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 77
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/userservice/user/preferences":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 14
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/userservice/workspaces":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 5
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/userservice/workspaces/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 158
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/userservice/workspaces/log":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Authentifizierung/Sitzung verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 120
+        statuses: [200, 500]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+        "500":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/vatrates/vatrates":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 158
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/cost-centers":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 30
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/delivery-terms/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 48
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/incoming-invoices/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-arrival/position-info":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 2
+        statuses: [200, 400]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+        "400":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-arrival/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 64
+        statuses: [200, 500]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+        "500":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-proposals":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 10
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-proposals/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    put:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-proposals/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 31
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-proposals/search/sums":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 10
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-proposals/to-order":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 10
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/order-states":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 48
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 27
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+    put:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 4
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/[REDACTED]/email":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/[REDACTED]/positions":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 26
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/[REDACTED]/process-order":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 9
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/{uuid}":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/{uuid}/positions":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/{uuid}/process-order":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/from-proposal":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 10
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/orders/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 21
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/producers":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 55
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/stock-items":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/stock-items/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/stocktaking-articles":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/storage-locations":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 73
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawi/storage-locations/[REDACTED]":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawiservice/order-arrival/book":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 3
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawiservice/order-arrival/search":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Bestellung/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [500]
+      responses:
+        "500":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawiservice/orders/customer/[REDACTED]/order-ids":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Kunde/Kundensuche verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 7
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawiservice/stock-bookings/search":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawiservice/stock-items/count-article-quantities":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Artikel/Warenwirtschaft verifizieren)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/wawiservice/stocktaking-lists":
+    get:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [200]
+      responses:
+        "200":
+          description: TODO - Schema aus weiteren redacted Logs ableiten
+  "/apigateway/workspaces":
+    post:
+      summary: "TODO: beobachteten Fachprozess bestaetigen (TODO: Fachprozess aus Flow-Marker ableiten)"
+      x-observed:
+        host: "api2.optica-omnia.de"
+        count: 1
+        statuses: [201]
+      responses:
+        "201":
+          description: TODO - Schema aus weiteren redacted Logs ableiten

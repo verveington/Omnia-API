@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Optica Omnia Flow UI</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-2: #f0f4f7;
+      --text: #16202a;
+      --muted: #647180;
+      --border: #d8dee6;
+      --blue: #1f5eff;
+      --teal: #007a72;
+      --amber: #a05a00;
+      --red: #b42318;
+      --green: #1d7f43;
+      --shadow: 0 12px 30px rgba(22, 32, 42, 0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); }
+    header { position: sticky; top: 0; z-index: 10; display: flex; gap: 18px; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.94); backdrop-filter: blur(10px); }
+    h1 { margin: 0; font-size: 18px; line-height: 1.2; font-weight: 720; }
+    h2 { margin: 0 0 12px; font-size: 14px; line-height: 1.25; font-weight: 720; }
+    h3 { margin: 0; font-size: 13px; line-height: 1.25; font-weight: 720; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .subtle { color: var(--muted); font-size: 12px; }
+    .layout { display: grid; grid-template-columns: minmax(280px, 370px) minmax(420px, 1fr) minmax(320px, 450px); gap: 14px; padding: 14px; min-height: calc(100vh - 58px); }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow); min-width: 0; }
+    .panel-head { padding: 14px; border-bottom: 1px solid var(--border); }
+    .panel-body { padding: 14px; }
+    .filters { display: grid; grid-template-columns: 1fr 130px; gap: 10px; }
+    input, select { width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); font: inherit; font-size: 13px; }
+    .stats { display: grid; grid-template-columns: repeat(6, minmax(110px, 1fr)); gap: 10px; min-width: 680px; }
+    .stat { padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--panel-2); }
+    .stat strong { display: block; font-size: 18px; line-height: 1.1; }
+    .recording-list, .timeline, .detail { display: grid; gap: 10px; }
+    .recording { width: 100%; text-align: left; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 10px; cursor: pointer; }
+    .recording[aria-selected="true"] { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(31,94,255,0.12); }
+    .recording-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .pill { display: inline-flex; align-items: center; height: 22px; padding: 0 7px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--muted); font-size: 11px; font-weight: 650; white-space: nowrap; }
+    .pill.good { color: var(--green); border-color: rgba(29,127,67,0.25); background: rgba(29,127,67,0.08); }
+    .pill.warn { color: var(--amber); border-color: rgba(160,90,0,0.28); background: rgba(160,90,0,0.08); }
+    .pill.bad { color: var(--red); border-color: rgba(180,35,24,0.25); background: rgba(180,35,24,0.08); }
+    .step { border: 1px solid var(--border); border-radius: 8px; background: #fff; overflow: hidden; }
+    .step-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; background: var(--panel-2); }
+    .step-body { padding: 10px 12px; display: grid; gap: 8px; }
+    .api-row { display: grid; grid-template-columns: 56px 52px minmax(0, 1fr) 58px; gap: 8px; align-items: center; padding: 7px 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-size: 12px; }
+    code { overflow-wrap: anywhere; font-family: "SFMono-Regular", Consolas, ui-monospace, monospace; font-size: 12px; }
+    .method { font-weight: 780; color: var(--teal); }
+    .status { justify-self: end; font-weight: 720; }
+    .status.error { color: var(--red); }
+    .empty { padding: 16px; color: var(--muted); border: 1px dashed var(--border); border-radius: 8px; background: #fff; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .links a { display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-size: 12px; }
+    .endpoint-list { display: grid; gap: 6px; max-height: 34vh; overflow: auto; }
+    .endpoint { padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+    .snapshot { padding: 8px; border-left: 3px solid var(--teal); background: #f8fbfb; font-size: 12px; }
+    .relationship-list { display: grid; gap: 8px; }
+    .relationship { padding: 9px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+    .relationship-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+    .relationship-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+    .relationship-flow code { padding: 2px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--panel-2); }
+    .relationship-arrow { color: var(--muted); font-weight: 760; }
+    @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .stats { min-width: 0; grid-template-columns: repeat(2, 1fr); } header { align-items: flex-start; flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Optica Omnia Flow UI</h1>
+      <div class="subtle">Read-only Timeline aus redaktierten Recording-Artefakten</div>
+    </div>
+    <div class="stats" id="summaryStats" aria-label="Zusammenfassung"></div>
+  </header>
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Recordings</h2>
+        <div class="filters">
+          <input id="recordingSearch" type="search" placeholder="Recording, Zweck, Endpoint">
+          <select id="statusFilter">
+            <option value="">Alle Status</option>
+            <option value="completed">completed</option>
+            <option value="blocked">blocked</option>
+            <option value="failed">failed</option>
+          </select>
+          <select id="methodFilter">
+            <option value="">Alle Methoden</option>
+            <option>GET</option>
+            <option>POST</option>
+            <option>PUT</option>
+            <option>PATCH</option>
+            <option>DELETE</option>
+          </select>
+          <select id="expectedFilter">
+            <option value="">Alle Erwartungen</option>
+            <option value="missing">fehlende erwartete Endpunkte</option>
+            <option value="observed">erwartete Endpunkte beobachtet</option>
+          </select>
+        </div>
+      </div>
+      <div class="panel-body recording-list" id="recordingList"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head">
+        <h2 id="timelineTitle">Timeline</h2>
+        <div class="subtle" id="timelineMeta"></div>
+      </div>
+      <div class="panel-body timeline" id="timeline"></div>
+    </section>
+    <aside class="panel">
+      <div class="panel-head">
+        <h2>Details</h2>
+      </div>
+      <div class="panel-body detail" id="details"></div>
+    </aside>
+  </main>
+  <script>
+    const dataUrl = "flow-ui-data.json";
+    const state = { data: null, selectedId: "", search: "", status: "", method: "", expected: "" };
+
+    fetch(dataUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        state.data = data;
+        state.selectedId = data.recordings[0] ? data.recordings[0].id : "";
+        bindFilters();
+        render();
+      })
+      .catch((error) => {
+        document.getElementById("recordingList").innerHTML = '<div class="empty">Flow-Daten konnten nicht geladen werden: ' + escapeHtml(error.message) + '</div>';
+      });
+
+    function bindFilters() {
+      for (const id of ["recordingSearch", "statusFilter", "methodFilter", "expectedFilter"]) {
+        document.getElementById(id).addEventListener("input", (event) => {
+          const key = id === "recordingSearch" ? "search" : id.replace("Filter", "");
+          state[key] = event.target.value;
+          const visible = filteredRecordings();
+          if (!visible.some((recording) => recording.id === state.selectedId)) {
+            state.selectedId = visible[0] ? visible[0].id : "";
+          }
+          render();
+        });
+      }
+    }
+
+    function render() {
+      renderSummary();
+      renderRecordings();
+      renderTimeline();
+      renderDetails();
+    }
+
+    function renderSummary() {
+      const summary = state.data.summary;
+      const stats = [
+        ["Recordings", summary.recordings],
+        ["Responses", summary.apiResponses],
+        ["Endpunkte", summary.uniqueEndpoints],
+        ["Fehlend erwartet", summary.missingExpectedEndpoints],
+        ["Downloads", summary.downloads],
+        ["Relationships", summary.relationships || 0],
+      ];
+      document.getElementById("summaryStats").innerHTML = stats.map(([label, value]) => '<div class="stat"><strong>' + value + '</strong><span class="subtle">' + label + '</span></div>').join("");
+    }
+
+    function filteredRecordings() {
+      const query = state.search.toLowerCase().trim();
+      return state.data.recordings.filter((recording) => {
+        const haystack = [
+          recording.label,
+          recording.purpose,
+          recording.mode,
+          recording.status,
+          recording.auditStatus,
+          recording.endpoints.map((endpoint) => endpoint.method + " " + endpoint.path).join(" "),
+          recording.expectedEndpoints.map((endpoint) => endpoint.method + " " + endpoint.path).join(" "),
+          (recording.relationships ? recording.relationships.transitions.map((transition) => transition.fromArea + " " + transition.toArea).join(" ") : ""),
+          (recording.relationships ? recording.relationships.stepFlows.map((flow) => flow.step + " " + flow.domains.join(" ")).join(" ") : ""),
+        ].join(" ").toLowerCase();
+        if (query && !haystack.includes(query)) return false;
+        if (state.status && recording.status !== state.status) return false;
+        if (state.method && !recording.endpoints.some((endpoint) => endpoint.method === state.method)) return false;
+        const missing = recording.expectedEndpoints.some((endpoint) => endpoint.observed === false);
+        const observed = recording.expectedEndpoints.some((endpoint) => endpoint.observed === true);
+        if (state.expected === "missing" && !missing) return false;
+        if (state.expected === "observed" && !observed) return false;
+        return true;
+      });
+    }
+
+    function selectedRecording() {
+      return state.data.recordings.find((recording) => recording.id === state.selectedId) || null;
+    }
+
+    function renderRecordings() {
+      const container = document.getElementById("recordingList");
+      const recordings = filteredRecordings();
+      if (recordings.length === 0) {
+        container.innerHTML = '<div class="empty">Keine Recordings fuer diese Filter.</div>';
+        return;
+      }
+      container.innerHTML = recordings.map((recording) => {
+        const missing = recording.expectedEndpoints.filter((endpoint) => endpoint.observed === false).length;
+        const relationshipCount = recording.relationships ? recording.relationships.transitions.length : 0;
+        return '<button class="recording" aria-selected="' + String(recording.id === state.selectedId) + '" data-id="' + escapeAttr(recording.id) + '">' +
+          '<div class="recording-top"><h3>' + escapeHtml(recording.label) + '</h3><span class="pill ' + (missing ? "warn" : "good") + '">' + missing + ' fehlt</span></div>' +
+          '<div class="subtle">' + escapeHtml(recording.purpose || "-") + ' · ' + escapeHtml(recording.mode || "-") + ' · ' + escapeHtml(recording.status || "-") + '</div>' +
+          '<div class="subtle">' + recording.endpoints.length + ' Endpunkte · ' + recording.steps.length + ' Schritte · ' + relationshipCount + ' Relationships · ' + formatDate(recording.startedAt) + '</div>' +
+        '</button>';
+      }).join("");
+      for (const button of container.querySelectorAll(".recording")) {
+        button.addEventListener("click", () => {
+          state.selectedId = button.getAttribute("data-id") || "";
+          render();
+        });
+      }
+    }
+
+    function renderTimeline() {
+      const recording = selectedRecording();
+      const title = document.getElementById("timelineTitle");
+      const meta = document.getElementById("timelineMeta");
+      const container = document.getElementById("timeline");
+      if (!recording) {
+        title.textContent = "Timeline";
+        meta.textContent = "";
+        container.innerHTML = '<div class="empty">Kein Recording ausgewählt.</div>';
+        return;
+      }
+      title.textContent = recording.label;
+      meta.textContent = [recording.purpose, recording.mode, recording.status, recording.auditStatus].filter(Boolean).join(" · ");
+      if (recording.steps.length === 0) {
+        container.innerHTML = '<div class="empty">Keine Timeline-Schritte vorhanden.</div>';
+        return;
+      }
+      container.innerHTML = recording.steps.map((step) => {
+        const calls = step.apiCalls.map((call) => apiRow(call)).join("");
+        const snapshots = step.uiSnapshots.map((snapshot) => '<div class="snapshot">UI: <code>' + escapeHtml(snapshot.path || "-") + '</code><br>Aktionen: ' + escapeHtml(snapshot.actions.join(", ") || "-") + '</div>').join("");
+        const downloads = step.downloads.map((download) => '<div class="snapshot">Download ' + escapeHtml(download.extension || "?") + ': <code>' + escapeHtml(download.url) + '</code></div>').join("");
+        const events = step.events.map((event) => '<div class="snapshot">' + escapeHtml(event.kind) + ': <code>' + escapeHtml(event.detail) + '</code></div>').join("");
+        return '<article class="step">' +
+          '<div class="step-head"><h3>' + escapeHtml(step.name) + '</h3><span class="pill">' + escapeHtml(step.offset) + '</span></div>' +
+          '<div class="step-body">' + (calls || '<div class="subtle">Keine API-Responses in diesem Schritt.</div>') + snapshots + downloads + events + '</div>' +
+        '</article>';
+      }).join("");
+    }
+
+    function apiRow(call) {
+      const statusClass = call.status >= 400 ? "status error" : "status";
+      return '<div class="api-row">' +
+        '<span class="subtle">' + escapeHtml(call.offset) + '</span>' +
+        '<span class="method">' + escapeHtml(call.method) + '</span>' +
+        '<code>' + escapeHtml(call.path) + '</code>' +
+        '<span class="' + statusClass + '">' + escapeHtml(String(call.status || "-")) + '</span>' +
+      '</div>';
+    }
+
+    function renderDetails() {
+      const recording = selectedRecording();
+      const container = document.getElementById("details");
+      if (!recording) {
+        container.innerHTML = '<div class="empty">Keine Details.</div>';
+        return;
+      }
+      const links = Object.entries(recording.artifacts)
+        .filter(([, value]) => value)
+        .map(([key, value]) => '<a href="' + escapeAttr("../" + value) + '" target="_blank" rel="noreferrer">' + escapeHtml(key) + '</a>')
+        .join("");
+      const expected = recording.expectedEndpoints.map((endpoint) => '<div class="endpoint"><span class="pill ' + (endpoint.observed ? "good" : "warn") + '">' + (endpoint.observed ? "gesehen" : "fehlt") + '</span> <strong>' + escapeHtml(endpoint.method) + '</strong> <code>' + escapeHtml(endpoint.path) + '</code></div>').join("");
+      const endpoints = recording.endpoints.map((endpoint) => '<div class="endpoint"><strong>' + escapeHtml(endpoint.method) + '</strong> <code>' + escapeHtml(endpoint.path) + '</code><div class="subtle">' + endpoint.count + 'x · Status ' + escapeHtml(endpoint.statuses.join(", ") || "-") + '</div></div>').join("");
+      container.innerHTML =
+        '<section><h2>Artefakte</h2><div class="links">' + (links || '<span class="subtle">Keine Links</span>') + '</div></section>' +
+        '<section><h2>Impact</h2><div class="endpoint">Responses: ' + recording.impact.targetResponses + '<br>Neue Endpunkte: ' + recording.impact.newEndpointCount + '<br>Coverage-Delta: ' + recording.impact.coverageDeltaPercent + '%</div></section>' +
+        renderRelationships(recording) +
+        '<section><h2>Erwartete Endpunkte</h2><div class="endpoint-list">' + (expected || '<div class="empty">Keine erwarteten Endpunkte.</div>') + '</div></section>' +
+        '<section><h2>Beobachtete Endpunkte</h2><div class="endpoint-list">' + (endpoints || '<div class="empty">Keine Endpunkte.</div>') + '</div></section>';
+    }
+
+    function renderRelationships(recording) {
+      const relationships = recording.relationships || { transitions: [], stepFlows: [], responseCount: 0, domainCount: 0 };
+      const transitions = relationships.transitions.slice(0, 16).map((transition) => {
+        const example = transition.examples && transition.examples[0] ? transition.examples[0] : null;
+        const steps = (transition.steps || []).slice(0, 4).join(", ");
+        return '<div class="relationship">' +
+          '<div class="relationship-title"><strong>' + escapeHtml(transition.fromArea) + ' <span class="relationship-arrow">-&gt;</span> ' + escapeHtml(transition.toArea) + '</strong><span class="pill">' + transition.count + 'x</span></div>' +
+          '<div class="subtle">Schritte: ' + escapeHtml(steps || "-") + '</div>' +
+          (example ? '<div class="subtle"><code>' + escapeHtml(endpointLabel(example.from)) + '</code> <span class="relationship-arrow">-&gt;</span> <code>' + escapeHtml(endpointLabel(example.to)) + '</code></div>' : '') +
+        '</div>';
+      }).join("");
+      const stepFlows = relationships.stepFlows.slice(0, 10).map((flow) => {
+        const domains = flow.domains || [];
+        const endpoints = (flow.endpoints || []).slice(0, 4).map((endpoint) => '<code>' + escapeHtml(endpointLabel(endpoint)) + '</code>').join("");
+        return '<div class="relationship">' +
+          '<div class="relationship-title"><strong>' + escapeHtml(flow.step || "Ohne Marker") + '</strong><span class="pill">' + flow.responseCount + ' Responses</span></div>' +
+          '<div class="relationship-flow">' + (domains.length ? domains.map((domain, index) => (index ? '<span class="relationship-arrow">-&gt;</span>' : '') + '<code>' + escapeHtml(domain) + '</code>').join("") : '<span class="subtle">Keine Domaenenfolge</span>') + '</div>' +
+          '<div class="relationship-flow">' + (endpoints || '<span class="subtle">Keine Beispiel-Endpunkte</span>') + '</div>' +
+        '</div>';
+      }).join("");
+      return '<section><h2>Relationships</h2><div id="relationshipList" class="relationship-list">' +
+        '<div class="endpoint">API-Responses: ' + relationships.responseCount + '<br>Domaenen: ' + relationships.domainCount + '<br>Domaenen-Kanten: ' + relationships.transitions.length + '</div>' +
+        (transitions || '<div class="empty">Keine Domaenen-Wechsel beobachtet.</div>') +
+        (stepFlows ? '<h2>Step-Flows</h2>' + stepFlows : '') +
+      '</div></section>';
+    }
+
+    function endpointLabel(endpoint) {
+      return String(endpoint.method || "-") + " " + String(endpoint.path || "-") + " (" + String(endpoint.status || "-") + ")";
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? value : date.toLocaleString("de-DE");
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/\n/g, "");
+    }
+  </script>
+</body>
+</html>

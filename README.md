@@ -40,6 +40,7 @@ Dieses Verzeichnis hat zwei Naturen:
 
 | Du willst … | Lies / Mach |
 |---|---|
+| Einen nutzbaren Einstieg in die echte `/apigateway/*`-API | [docs/apigateway/README.md](docs/apigateway/README.md) |
 | Verstehen, welche API-Endpoints existieren | [docs/api2-backend-paths.md](docs/api2-backend-paths.md) |
 | Wissen, wie die API fachlich gedacht ist | [docs/omnia-api-plan.md](docs/omnia-api-plan.md) |
 | Live-Verkehr mitschneiden | [playwright-recorder/README.md](playwright-recorder/README.md) |

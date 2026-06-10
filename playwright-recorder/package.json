@@ -5,9 +5,13 @@
   "type": "module",
   "scripts": {
     "record": "node src/record-api-traffic.js",
+    "native:probe": "node src/native-cdp-launcher.js",
+    "native:session": "node src/native-cdp-launcher.js --session",
+    "native:voice": "node src/native-cdp-voice-server.js",
     "analyze": "node src/analyze-captures.js",
     "analyze:all": "node src/analyze-cumulative.js",
-    "install:browsers": "playwright install chromium"
+    "install:browsers": "playwright install chromium",
+    "test": "node --test src/*.test.js"
   },
   "dependencies": {
     "playwright": "^1.53.0"

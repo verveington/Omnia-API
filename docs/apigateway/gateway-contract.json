@@ -1,0 +1,341 @@
+{
+  "status": "curated-reverse-engineered-draft",
+  "baseUrl": "https://api2.optica-omnia.de",
+  "prefix": "/apigateway",
+  "sources": [
+    "../api2-backend-paths.md",
+    "../playwright-api-cumulative-analysis.md",
+    "../openapi.cumulative.json",
+    "../recordings/api-recording-2026-05-15T22-45-05-656Z.md",
+    "../recordings/api-recording-2026-05-16T15-12-38-151Z.md"
+  ],
+  "auth": {
+    "scheme": "bearer",
+    "format": "JWT",
+    "tokenAcquisition": "not captured in curated /apigateway recordings",
+    "notes": [
+      "Unauthenticated service bases are known to return 401.",
+      "Do not treat /apigateway/userservice/metrics/user-login as an auth endpoint; it is a metric endpoint."
+    ]
+  },
+  "conventions": {
+    "paginationQueryParams": ["page", "size", "sort"],
+    "selectionShape": {
+      "includeAll": false,
+      "selections": ["<id>"],
+      "filters": null
+    },
+    "writePolicy": [
+      "validate before write",
+      "use explicit IDs",
+      "read back after write",
+      "never retry non-idempotent writes automatically"
+    ]
+  },
+  "operations": [
+    {
+      "operationId": "get-current-user-context",
+      "domain": "identity",
+      "method": "GET",
+      "path": "/apigateway/user-details",
+      "summary": "Read current user, tenant, workspace, and permission context.",
+      "risk": "medium",
+      "stability": "observed",
+      "responses": ["200"],
+      "guardrails": ["Use as auth smoke test only after token acquisition is verified."]
+    },
+    {
+      "operationId": "search-customers",
+      "domain": "customers",
+      "method": "GET",
+      "path": "/apigateway/kunden/customers/search",
+      "summary": "Search customer rows.",
+      "risk": "low",
+      "stability": "observed-repeated",
+      "queryParams": ["active", "keywords", "page", "size"],
+      "responses": ["200"],
+      "guardrails": ["Keep page size small.", "Do not log protected customer payloads."]
+    },
+    {
+      "operationId": "get-customer",
+      "domain": "customers",
+      "method": "GET",
+      "path": "/apigateway/kunden/customers/{uuid}",
+      "summary": "Read customer details.",
+      "risk": "medium",
+      "stability": "observed-repeated",
+      "pathParams": ["uuid"],
+      "responses": ["200"],
+      "guardrails": ["Protected personal and insurance data; redact logs."]
+    },
+    {
+      "operationId": "search-salesprocesses",
+      "domain": "sales",
+      "method": "POST",
+      "path": "/apigateway/sales/salesprocesses/search",
+      "summary": "Search Omnia sales processes/cases.",
+      "risk": "medium",
+      "stability": "observed-repeated",
+      "queryParams": ["page", "size", "sort"],
+      "requestShape": {
+        "status": [],
+        "keywords": "<text>",
+        "active": true,
+        "editor": {
+          "editorIds": []
+        }
+      },
+      "responses": ["200"],
+      "guardrails": ["Keep pagination in query string.", "Do not move page/size into the body."]
+    },
+    {
+      "operationId": "search-articles",
+      "domain": "articles",
+      "method": "POST",
+      "path": "/apigateway/article-tenant/articles/search",
+      "summary": "Search article master data.",
+      "risk": "medium",
+      "stability": "observed-repeated",
+      "knownAliases": ["/apigateway/articletenantservice/articles/search/{id}"],
+      "queryParams": ["page", "size"],
+      "requestShape": {
+        "listType": "ARTICLE",
+        "size": 20,
+        "dataOrigin": [],
+        "keywords": "<article-or-pzn>",
+        "active": true
+      },
+      "responses": ["200"],
+      "guardrails": ["Keep article-tenant and articletenantservice roles separate until verified."]
+    },
+    {
+      "operationId": "search-order-proposals",
+      "domain": "wawi",
+      "method": "POST",
+      "path": "/apigateway/wawi/order-proposals/search",
+      "summary": "Search order proposals.",
+      "risk": "medium",
+      "stability": "observed",
+      "queryParams": ["page", "size", "sort"],
+      "requestShape": {
+        "keywords": "<case-or-customer>",
+        "active": true
+      },
+      "responses": ["200"],
+      "guardrails": ["Validate supplierId, PZN, unit, and quantity before order creation."]
+    },
+    {
+      "operationId": "sum-order-proposals",
+      "domain": "wawi",
+      "method": "POST",
+      "path": "/apigateway/wawi/order-proposals/search/sums",
+      "summary": "Get proposal quantity and value totals for the same filter as proposal search.",
+      "risk": "low",
+      "stability": "observed",
+      "requestShape": {
+        "keywords": "<case-or-customer>",
+        "active": true
+      },
+      "responses": ["200"]
+    },
+    {
+      "operationId": "prepare-order-proposals",
+      "domain": "wawi",
+      "method": "POST",
+      "path": "/apigateway/wawi/order-proposals/to-order",
+      "summary": "Prepare selected proposals for conversion into an order.",
+      "risk": "high",
+      "stability": "observed",
+      "requestShape": {
+        "includeAll": false,
+        "selections": ["<proposalId>"],
+        "filters": null
+      },
+      "responses": ["200"],
+      "guardrails": ["Use explicit selections.", "Avoid includeAll for automation."]
+    },
+    {
+      "operationId": "create-order-from-proposals",
+      "domain": "wawi",
+      "method": "POST",
+      "path": "/apigateway/wawi/orders/from-proposal",
+      "summary": "Create an order from selected supplier proposals.",
+      "risk": "high",
+      "stability": "observed-with-known-failure",
+      "requestShape": {
+        "proposals": {
+          "includeAll": false,
+          "selections": ["<proposalId>"],
+          "filters": null
+        },
+        "supplierId": "<supplierId>"
+      },
+      "responses": ["200", "500"],
+      "knownFailures": [
+        {
+          "signal": "500 when resolveUnitMismatch is used instead of explicit supplierId",
+          "normalizedCode": "UNIT_MISMATCH_REQUIRES_USER_DECISION"
+        }
+      ],
+      "guardrails": ["Group by supplier.", "Do not use resolveUnitMismatch automatically.", "Read order and positions after success."]
+    },
+    {
+      "operationId": "get-order",
+      "domain": "wawi",
+      "method": "GET",
+      "path": "/apigateway/wawi/orders/{uuid}",
+      "summary": "Read order details.",
+      "risk": "medium",
+      "stability": "observed-repeated",
+      "pathParams": ["uuid"],
+      "responses": ["200"],
+      "guardrails": ["Use after order-related writes for verification."]
+    },
+    {
+      "operationId": "get-order-positions",
+      "domain": "wawi",
+      "method": "GET",
+      "path": "/apigateway/wawi/orders/{uuid}/positions",
+      "summary": "Read order positions.",
+      "risk": "medium",
+      "stability": "observed-repeated",
+      "pathParams": ["uuid"],
+      "responses": ["200"],
+      "guardrails": ["Verify supplier, quantities, units, and value."]
+    },
+    {
+      "operationId": "process-order",
+      "domain": "wawi",
+      "method": "POST",
+      "path": "/apigateway/wawi/orders/{uuid}/process-order",
+      "summary": "Process/create the order document for an existing order.",
+      "risk": "high",
+      "stability": "observed",
+      "pathParams": ["uuid"],
+      "requestShape": {
+        "orderState": null,
+        "orderDate": "<iso-date>",
+        "markProposalsAsOrdered": true,
+        "printOptions": {
+          "stationery": true,
+          "prices": true,
+          "emailHeader": false,
+          "emailFooter": false,
+          "showSalesProcessNumber": true
+        }
+      },
+      "responses": ["200"],
+      "guardrails": ["Capture orderDocumentId.", "Read order after processing."]
+    },
+    {
+      "operationId": "prepare-order-mail",
+      "domain": "wawi",
+      "method": "POST",
+      "path": "/apigateway/wawi/orders/{uuid}/email",
+      "summary": "Prepare PDF/mail data for local mail handling.",
+      "risk": "medium",
+      "stability": "observed",
+      "pathParams": ["uuid"],
+      "requestShape": {
+        "createMailFile": true,
+        "documentIds": ["<orderDocumentId>"]
+      },
+      "responses": ["200"],
+      "guardrails": ["Do not label as server-side mail delivery.", "Capture mailFileId."]
+    },
+    {
+      "operationId": "search-order-arrivals",
+      "domain": "wawi",
+      "method": "POST",
+      "path": "/apigateway/wawi/order-arrival/search",
+      "summary": "Search order arrivals for goods receipt workflows.",
+      "risk": "medium",
+      "stability": "observed-repeated",
+      "queryParams": ["page", "size", "sort"],
+      "requestShape": {
+        "keywords": "",
+        "active": true,
+        "orderNr": "<orderNumber>",
+        "arrivalBookingState": ""
+      },
+      "responses": ["200"],
+      "guardrails": ["Use narrow order filters before booking."]
+    },
+    {
+      "operationId": "book-goods-receipt",
+      "domain": "wawiservice",
+      "method": "POST",
+      "path": "/apigateway/wawiservice/order-arrival/book",
+      "summary": "Book goods receipt for selected arrival positions.",
+      "risk": "high",
+      "stability": "observed",
+      "requestShape": {
+        "orderNumber": "<orderNumber>",
+        "deliveryDate": "<iso-date>",
+        "deliveryNr": "<deliveryNumber>",
+        "filialeId": "<filialeId>",
+        "storageLocationId": "<storageLocationId>",
+        "applyToAllFiliale": false,
+        "quantity": 1,
+        "salesProcessStatusId": null,
+        "versorgungsStatusId": null,
+        "comment": null,
+        "editorId": "<editorId>",
+        "zeroRemainingAmount": false,
+        "performGoodsReceipt": true,
+        "filteredSelection": {
+          "includeAll": false,
+          "selections": ["<arrivalPositionId>"],
+          "filters": null
+        }
+      },
+      "responses": ["200"],
+      "guardrails": ["Use explicit arrival selection.", "Read state after booking.", "Do not retry blindly."]
+    },
+    {
+      "operationId": "mark-goods-receipt-recorded",
+      "domain": "wawiservice",
+      "method": "POST",
+      "path": "/apigateway/wawiservice/order-arrival/book-recorded",
+      "summary": "Mark booked goods receipt as recorded when Omnia still requires a second step.",
+      "risk": "high",
+      "stability": "observed",
+      "responses": ["200"],
+      "guardrails": ["Call only when current response state requires it.", "Build filters from current search context, not stale UI state."]
+    },
+    {
+      "operationId": "search-stored-documents",
+      "domain": "documents",
+      "method": "GET",
+      "path": "/apigateway/document/stored-documents",
+      "summary": "Search stored document metadata for an entity context.",
+      "risk": "medium",
+      "stability": "observed",
+      "queryParams": [
+        "availableTo.entityIds",
+        "availableTo.type",
+        "entityArticle",
+        "entityCustomer",
+        "entityOrder",
+        "entitySalesProcess",
+        "entitySupplier",
+        "size"
+      ],
+      "responses": ["200"],
+      "guardrails": ["Resolve metadata before file download.", "Do not expose blind file access."]
+    },
+    {
+      "operationId": "download-file-archive-file",
+      "domain": "documents",
+      "method": "GET",
+      "path": "/apigateway/file-archive/file-archive/load/files/{uuid}",
+      "summary": "Download binary file content from file archive.",
+      "risk": "medium",
+      "stability": "observed",
+      "pathParams": ["uuid"],
+      "queryParams": ["apiHash"],
+      "responses": ["200"],
+      "guardrails": ["Treat file IDs and apiHash as sensitive.", "Never log file contents."]
+    }
+  ]
+}
