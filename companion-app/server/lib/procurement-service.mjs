@@ -361,33 +361,67 @@ function getSupplierGroup(record, supplierId) {
 
 function validateSupplierOrder(record, supplier) {
   const errors = [];
-  for (const item of supplier.items) {
-    addReadinessErrors(errors, item);
-    if (!normalizeText(item.articleNumber)) addValidationError(errors, item, "article_number_missing", "Artikelnummer fehlt");
-    if (!normalizeText(item.pzn)) addValidationError(errors, item, "pzn_missing", "PZN fehlt");
-    if (!normalizeText(item.unit)) addValidationError(errors, item, "unit_missing", "Einheit fehlt");
-    if (!Number.isFinite(Number(item.quantity)) || Number(item.quantity) <= 0) {
-      addValidationError(errors, item, "quantity_invalid", "Menge muss groesser 0 sein");
-    }
-    if (item.supplierId !== supplier.supplierId) {
-      addValidationError(errors, item, "supplier_mismatch", "Position gehoert nicht zur Lieferantengruppe");
-    }
+  if (record.aggregationState === "missing_sales_process_reference") {
+    addCaseValidationError(errors, "MISSING_SALES_PROCESS_REFERENCE", "Dokumentierte Vorgangsreferenz fehlt");
+  }
+  if (!normalizeText(record.status) || record.status === "missing_status") {
+    addCaseValidationError(errors, "MISSING_STATUS", "Gateway-Status fehlt");
+  }
+  if (!normalizeText(record.number)) {
+    addCaseValidationError(errors, "MISSING_CASE_NUMBER", "Vorgangsnummer fehlt");
   }
 
-  if (!normalizeText(record.number)) {
-    errors.push({ code: "case_number_missing", message: "Vorgangsnummer fehlt" });
+  for (const item of supplier.items) {
+    addReadinessErrors(errors, item);
+    if (!normalizeText(item.id)) addValidationError(errors, item, "MISSING_PROPOSAL_ID", "Bestellvorschlag-ID fehlt");
+    if (!normalizeText(supplier.supplierId) || !normalizeText(item.supplierId)) {
+      addValidationError(errors, item, "MISSING_SUPPLIER_ID", "Lieferant fehlt");
+    }
+    if (!normalizeText(item.articleId)) addValidationError(errors, item, "MISSING_ARTICLE_ID", "Artikel-ID fehlt");
+    if (!normalizeText(item.articleNumber)) addValidationError(errors, item, "MISSING_ARTICLE_NUMBER", "Artikelnummer fehlt");
+    if (!normalizeText(item.pzn) && !hasLiveLookupError(item)) addValidationError(errors, item, "MISSING_PZN", "PZN fehlt");
+    if (!normalizeText(item.unit)) addValidationError(errors, item, "MISSING_ORDER_UNIT", "Einheit fehlt");
+    if (!Number.isFinite(Number(item.quantity)) || Number(item.quantity) <= 0) {
+      addValidationError(errors, item, "MISSING_ORDER_QUANTITY", "Menge muss groesser 0 sein");
+    }
+    if (normalizeText(item.supplierId) && normalizeText(supplier.supplierId) && item.supplierId !== supplier.supplierId) {
+      addValidationError(errors, item, "SUPPLIER_MISMATCH", "Position gehoert nicht zur Lieferantengruppe");
+    }
   }
 
   return errors;
 }
 
 function addReadinessErrors(errors, item) {
+  if (hasLiveLookupError(item)) {
+    addValidationError(errors, item, "LIVE_LOOKUP_ERROR_BLOCKS_DRAFT", "Live-Artikeldaten konnten nicht belastbar gelesen werden");
+    return;
+  }
+
   if (item.procurementReadiness === "pzn_missing") {
-    addValidationError(errors, item, "pzn_missing", "PZN fehlt");
+    addValidationError(errors, item, "MISSING_PZN", "PZN fehlt");
+    return;
   }
   if (item.procurementReadiness === "supplier_missing") {
-    addValidationError(errors, item, "supplier_missing", "Lieferant fehlt");
+    addValidationError(errors, item, "MISSING_SUPPLIER_ID", "Lieferant fehlt");
+    return;
   }
+  if (item.procurementReadiness && item.procurementReadiness !== "ready_to_order") {
+    addValidationError(errors, item, "PROPOSAL_NOT_READY_FOR_DRAFT", "Bestellvorschlag ist nicht draft-bereit");
+  }
+}
+
+function hasLiveLookupError(item) {
+  return (
+    item.procurementReadiness === "live_lookup_error" ||
+    item.pznEnrichmentStatus === "live_lookup_error" ||
+    Boolean(item.liveLookupError)
+  );
+}
+
+function addCaseValidationError(errors, code, message) {
+  if (errors.some((error) => !error.proposalId && error.code === code)) return;
+  errors.push({ code, message });
 }
 
 function addValidationError(errors, item, code, message) {
