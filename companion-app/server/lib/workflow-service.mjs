@@ -1,9 +1,7 @@
 import { demoData } from "./demo-data.mjs";
 import { createProcurementService } from "./procurement-service.mjs";
 
-export function createWorkflowService({ omniaClient }) {
-  const procurementService = createProcurementService();
-
+export function createWorkflowService({ omniaClient, procurementService = createProcurementService({ omniaClient }) }) {
   async function getBootstrap(session) {
     if (isLive(session)) {
       return getLiveBootstrap(session);
@@ -32,11 +30,18 @@ export function createWorkflowService({ omniaClient }) {
         await omniaClient.request(session, {
           method: "POST",
           path: "/apigateway/sales/salesprocesses/search",
-          body: {
-            globalSearch: keywords,
-            keywords,
+          query: {
             page: 0,
             size: 25,
+            sort: "number,desc",
+          },
+          body: {
+            status: [],
+            keywords,
+            active: true,
+            editor: {
+              editorIds: [],
+            },
           },
         }),
       );
@@ -51,10 +56,14 @@ export function createWorkflowService({ omniaClient }) {
         await omniaClient.request(session, {
           method: "POST",
           path: "/apigateway/wawi/orders/search",
-          body: {
-            keywords,
+          query: {
             page: 0,
             size: 25,
+            sort: "number,desc",
+          },
+          body: {
+            keywords,
+            active: true,
           },
         }),
       );
@@ -69,10 +78,16 @@ export function createWorkflowService({ omniaClient }) {
         await omniaClient.request(session, {
           method: "POST",
           path: "/apigateway/wawi/order-arrival/search",
-          body: {
-            orderNumber,
+          query: {
             page: 0,
             size: 25,
+            sort: "number,desc",
+          },
+          body: {
+            keywords: "",
+            active: true,
+            orderNr: orderNumber,
+            arrivalBookingState: "",
           },
         }),
       );
@@ -99,7 +114,7 @@ export function createWorkflowService({ omniaClient }) {
         environment: "Live Omnia API",
       },
       cases,
-      orderProposals: demoData.orderProposals,
+      orderProposals: [],
       orders,
       goodsReceipts,
       procurementCases,
@@ -153,7 +168,7 @@ function normalizeOrders(payload) {
     supplier: item.supplierName || "",
     status: item.orderStateDescription || item.orderArrivalBookingState || "",
     orderValue: item.orderValue !== undefined && item.orderValue !== null ? `${item.orderValue} EUR` : "",
-    documentState: item.orderDocumentId ? "Bestelldokument bereit" : "Unbekannt",
+    documentState: item.orderDocumentId ? "Bestelldokument bereit" : "Noch nicht verarbeitet",
     mailState: item.mailFileId ? "PDF/Mail vorbereitet" : "Nicht vorbereitet",
   }));
 }

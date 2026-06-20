@@ -157,19 +157,24 @@ test("buildRecordingAutopilotHistoryReport prefers autopilot continuation comman
 });
 
 test("buildRecordingAutopilotHistoryReport marks fresh ready continuations runnable", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "recording-autopilot-report-ready-"));
+  const outcomeJsonFile = path.join(dir, "recording-autopilot-outcome.json");
+  fs.writeFileSync(outcomeJsonFile, "{}\n");
+  fs.utimesSync(outcomeJsonFile, new Date("2026-06-03T11:55:00.000Z"), new Date("2026-06-03T11:55:00.000Z"));
+
   const report = buildRecordingAutopilotHistoryReport([
     {
       timestamp: "2026-06-03T10:00:00.000Z",
       mode: "dry-run",
       status: "ready",
       reason: "Continue preview",
-      command: "node tools/recording-autopilot.ts --continue-from docs/recordings/recording-autopilot-outcome.json --run",
-      outcomeJsonFile: "docs/recordings/recording-autopilot-outcome.json",
-      continueCommand: "node tools/recording-autopilot.ts --continue-from docs/recordings/recording-autopilot-outcome.json --run",
+      command: `node tools/recording-autopilot.ts --continue-from ${outcomeJsonFile} --run`,
+      outcomeJsonFile,
+      continueCommand: `node tools/recording-autopilot.ts --continue-from ${outcomeJsonFile} --run`,
       continueArgs: [
         "tools/recording-autopilot.ts",
         "--continue-from",
-        "docs/recordings/recording-autopilot-outcome.json",
+        outcomeJsonFile,
         "--run",
       ],
       outcomeFresh: true,
@@ -180,11 +185,11 @@ test("buildRecordingAutopilotHistoryReport marks fresh ready continuations runna
 
   assert.equal(report.latestRunnable, true);
   assert.equal(report.latestRunnableReason, "Ready-Fortsetzung ist frisch und gated.");
-  assert.equal(report.latestOutcomeJsonFile, "docs/recordings/recording-autopilot-outcome.json");
+  assert.equal(report.latestOutcomeJsonFile, outcomeJsonFile);
   assert.deepEqual(report.latestContinueArgs, [
     "tools/recording-autopilot.ts",
     "--continue-from",
-    "docs/recordings/recording-autopilot-outcome.json",
+    outcomeJsonFile,
     "--run",
   ]);
   assert.match(buildRecordingAutopilotHistoryMarkdown(report), /Startfreigabe: ja/);

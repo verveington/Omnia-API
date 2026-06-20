@@ -15,13 +15,13 @@ export function OrdersModule({
   selectedCase,
   onSelectCase,
   onAction,
-  onCreateSupplierOrder,
+  onCreateSupplierOrderDraft,
 }: {
   procurementCases: ProcurementCase[];
   selectedCase: ProcurementCase;
   onSelectCase: (record: ProcurementCase) => void;
   onAction: (action: string, target: string) => void;
-  onCreateSupplierOrder: (caseId: string, supplierId: string) => Promise<ProcurementSupplierOrderResult>;
+  onCreateSupplierOrderDraft: (caseId: string, supplierId: string) => Promise<ProcurementSupplierOrderResult>;
 }) {
   const proposals = selectedCase.proposals ?? [];
   const supplierGroups = selectedCase.supplierGroups ?? [];
@@ -32,7 +32,7 @@ export function OrdersModule({
       <div className="panel panel--wide">
         <SectionHeader
           title="Bestellvorgänge"
-          description="Vorgänge aus Omnia mit vorhandenen Bestellvorschlägen."
+          description="Aggregierte Arbeitsliste aus Omnia-Bestellvorschlägen, Vorgängen und Artikeldaten."
           action={<ExportActions caseId={selectedCase.id} onAction={onAction} target={`Vorgang ${selectedCase.number}`} />}
         />
         <div className="procurement-list">
@@ -123,7 +123,7 @@ export function OrdersModule({
               group={group}
               key={`${selectedCase.id}-${group.supplierId}`}
               onAction={onAction}
-              onCreateSupplierOrder={onCreateSupplierOrder}
+              onCreateSupplierOrderDraft={onCreateSupplierOrderDraft}
             />
           ))}
         </div>
@@ -136,12 +136,12 @@ function SupplierGroupCard({
   caseId,
   group,
   onAction,
-  onCreateSupplierOrder,
+  onCreateSupplierOrderDraft,
 }: {
   caseId: string;
   group: SupplierProposalGroup;
   onAction: (action: string, target: string) => void;
-  onCreateSupplierOrder: (caseId: string, supplierId: string) => Promise<ProcurementSupplierOrderResult>;
+  onCreateSupplierOrderDraft: (caseId: string, supplierId: string) => Promise<ProcurementSupplierOrderResult>;
 }) {
   const blockedCount = group.items.filter((item) => item.procurementReadiness !== "ready_to_order").length;
   const [busy, setBusy] = useState(false);
@@ -149,19 +149,19 @@ function SupplierGroupCard({
   const [validationDetails, setValidationDetails] = useState<ProcurementOrderValidationDetail[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  async function createOrder() {
+  async function createOrderDraft() {
     setBusy(true);
     setErrorMessage(null);
     setValidationDetails([]);
     try {
-      const result = await onCreateSupplierOrder(caseId, group.supplierId);
+      const result = await onCreateSupplierOrderDraft(caseId, group.supplierId);
       setCreatedOrder(result);
-      onAction("Bestellung erzeugt", `Bestellung ${result.order.number}`);
+      onAction("Bestellentwurf erzeugt", `Bestellung ${result.order.number}`);
     } catch (error) {
       const details = getValidationDetails(error);
       setValidationDetails(details);
-      setErrorMessage(error instanceof Error ? error.message : "Bestellung konnte nicht erzeugt werden");
-      onAction("Bestellung nicht erzeugt", group.supplierName);
+      setErrorMessage(error instanceof Error ? error.message : "Bestellentwurf konnte nicht erzeugt werden");
+      onAction("Bestellentwurf nicht erzeugt", group.supplierName);
     } finally {
       setBusy(false);
     }
@@ -176,7 +176,7 @@ function SupplierGroupCard({
         {createdOrder ? (
           <div className="supplier-order-result">
             <CheckCircle2 size={16} />
-            <span>Bestellung {createdOrder.order.number} erzeugt</span>
+            <span>Bestellentwurf {createdOrder.order.number} erzeugt</span>
           </div>
         ) : null}
         {errorMessage ? (
@@ -191,9 +191,9 @@ function SupplierGroupCard({
         ) : null}
       </div>
       <div className="export-actions">
-        <ActionButton disabled={busy} onClick={createOrder}>
+        <ActionButton disabled={busy} onClick={createOrderDraft}>
           <ShoppingCart size={16} />
-          {busy ? "Erzeuge" : "Bestellung"}
+          {busy ? "Erzeuge" : "Entwurf"}
         </ActionButton>
         <ActionLink
           href={procurementSupplierExportUrl(caseId, group.supplierId, "xlsx")}
@@ -238,6 +238,10 @@ function ReadinessBadge({ proposal }: { proposal: ProcurementProposalItem }) {
 
   if (proposal.procurementReadiness === "pzn_missing") {
     return <StatusBadge tone="red">PZN fehlt</StatusBadge>;
+  }
+
+  if (proposal.procurementReadiness === "live_lookup_error") {
+    return <StatusBadge tone="red">Live-Lookup Fehler</StatusBadge>;
   }
 
   if (proposal.pznEnrichmentStatus === "enriched") {

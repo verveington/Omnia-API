@@ -85,7 +85,7 @@ export function procurementSupplierExportUrl(caseId: string, supplierId: string,
   return `/api/procurement/cases/${encodeURIComponent(caseId)}/suppliers/${encodeURIComponent(supplierId)}/export?format=${format}`;
 }
 
-export async function createProcurementSupplierOrder(
+export async function createProcurementSupplierOrderDraft(
   caseId: string,
   supplierId: string,
 ): Promise<ProcurementSupplierOrderResult> {

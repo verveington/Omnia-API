@@ -106,9 +106,13 @@ export interface ProcurementProposalItem {
   articleId: string;
   articleNumber: string;
   pzn: string;
-  pznEnrichmentStatus: "present" | "enriched" | "missing" | "failed";
+  pznEnrichmentStatus: "present" | "enriched" | "missing" | "failed" | "live_lookup_error";
   articleDetailsSource: string;
-  procurementReadiness: "ready_to_order" | "pzn_missing" | "supplier_missing";
+  procurementReadiness: "ready_to_order" | "pzn_missing" | "supplier_missing" | "live_lookup_error";
+  liveLookupError?: {
+    code: "LIVE_LOOKUP_ERROR";
+    category: "auth" | "gateway" | "timeout" | "network";
+  };
   description: string;
   quantity: number;
   unit: string;
@@ -153,6 +157,8 @@ export interface ProcurementOrderValidationDetail {
 
 export interface ProcurementSupplierOrderResult {
   mode: "mock" | "live";
+  stage: "draft";
+  processed: boolean;
   proposalIds: string[];
   order: ProcurementCreatedOrder;
 }
@@ -164,6 +170,7 @@ export interface ProcurementCase {
   status: string;
   customer: ProcurementCustomer;
   deliveryAddress: ProcurementAddress;
+  aggregationState?: "complete" | "missing_sales_process_reference";
   proposals: ProcurementProposalItem[];
   supplierGroups: SupplierProposalGroup[];
 }

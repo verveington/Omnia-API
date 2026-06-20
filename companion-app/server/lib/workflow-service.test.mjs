@@ -42,3 +42,89 @@ test("filters demo cases, orders and goods receipts by keyword", async () => {
   assert.deepEqual(orders.map((record) => record.number), ["411"]);
   assert.deepEqual(receipts.map((record) => record.orderNumber), ["413"]);
 });
+
+test("sends documented live search request contracts", async () => {
+  const calls = [];
+  const service = createWorkflowService({
+    omniaClient: {
+      async request(_session, request) {
+        calls.push(request);
+        return { content: [] };
+      },
+    },
+    procurementService: { listCases: async () => [] },
+  });
+  const session = liveSession();
+
+  await service.searchCases(session, { keywords: "Muster" });
+  await service.searchOrders(session, { keywords: "5001" });
+  await service.searchGoodsReceipts(session, { orderNumber: "413" });
+
+  assert.deepEqual(calls[0], {
+    method: "POST",
+    path: "/apigateway/sales/salesprocesses/search",
+    query: { page: 0, size: 25, sort: "number,desc" },
+    body: {
+      status: [],
+      keywords: "Muster",
+      active: true,
+      editor: { editorIds: [] },
+    },
+  });
+  assert.deepEqual(calls[1], {
+    method: "POST",
+    path: "/apigateway/wawi/orders/search",
+    query: { page: 0, size: 25, sort: "number,desc" },
+    body: {
+      keywords: "5001",
+      active: true,
+    },
+  });
+  assert.deepEqual(calls[2], {
+    method: "POST",
+    path: "/apigateway/wawi/order-arrival/search",
+    query: { page: 0, size: 25, sort: "number,desc" },
+    body: {
+      keywords: "",
+      active: true,
+      orderNr: "413",
+      arrivalBookingState: "",
+    },
+  });
+});
+
+test("uses injected live-capable procurement service for live bootstrap", async () => {
+  const procurementCalls = [];
+  const service = createWorkflowService({
+    omniaClient: {
+      async request(_session, request) {
+        if (request.path === "/apigateway/user-details") return { displayName: "Live User" };
+        return { content: [] };
+      },
+    },
+    procurementService: {
+      async listCases(session) {
+        procurementCalls.push(session);
+        return [{ id: "live-procurement-case" }];
+      },
+    },
+  });
+
+  const bootstrap = await service.getBootstrap(liveSession());
+
+  assert.equal(bootstrap.source, "live");
+  assert.equal(bootstrap.currentUser.name, "Live User");
+  assert.deepEqual(bootstrap.orderProposals, []);
+  assert.deepEqual(bootstrap.procurementCases, [{ id: "live-procurement-case" }]);
+  assert.equal(procurementCalls.length, 1);
+  assert.equal(procurementCalls[0].source, "live");
+});
+
+function liveSession() {
+  return {
+    source: "live",
+    omniaAccessToken: "token",
+    user: { username: "live-user", displayName: "Live User" },
+    workspace: "Live Workspace",
+  };
+}

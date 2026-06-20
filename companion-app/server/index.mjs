@@ -1,4 +1,5 @@
 import http from "node:http";
+import { pathToFileURL } from "node:url";
 import { createOmniaClient } from "./lib/omnia-client.mjs";
 import { attachmentHeaders, createExportService } from "./lib/export-service.mjs";
 import { createProcurementService } from "./lib/procurement-service.mjs";
@@ -15,44 +16,48 @@ import {
   sessionCookie,
 } from "./lib/http-utils.mjs";
 
-const port = Number(process.env.COMPANION_API_PORT || 5174);
-const sessionStore = createSessionStore();
-const omniaClient = createOmniaClient();
-const workflowService = createWorkflowService({ omniaClient });
-const procurementService = createProcurementService({ omniaClient });
-const exportService = createExportService();
+export function createCompanionServer({
+  sessionStore = createSessionStore(),
+  omniaClient = createOmniaClient(),
+  procurementService = createProcurementService({ omniaClient }),
+  workflowService = createWorkflowService({ omniaClient, procurementService }),
+  exportService = createExportService(),
+  allowedOrigin = process.env.COMPANION_ALLOWED_ORIGIN || "http://127.0.0.1:5173",
+} = {}) {
+  const deps = { sessionStore, workflowService, procurementService, exportService };
 
-const server = http.createServer(async (req, res) => {
-  try {
-    await route(req, res);
-  } catch (error) {
-    const status = error.status || 500;
-    sendJson(res, status, {
-      error: {
-        message: status === 500 ? "Internal server error" : error.message,
-        status,
-        ...(error.details ? { details: error.details } : {}),
-      },
-    });
-    if (status === 500) {
-      console.error(error);
+  return http.createServer(async (req, res) => {
+    applyCorsHeaders(res, allowedOrigin);
+
+    try {
+      await route(req, res, deps);
+    } catch (error) {
+      const status = error.status || 500;
+      sendJson(res, status, { error: normalizeError(error, status) });
+      if (status === 500) {
+        console.error(redactedLogError(error, status));
+      }
     }
-  }
-});
+  });
+}
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`Omnia Companion BFF listening on http://127.0.0.1:${port}`);
-});
+export function startCompanionServer({ port = Number(process.env.COMPANION_API_PORT || 5174), host = "127.0.0.1" } = {}) {
+  const server = createCompanionServer();
+  server.listen(port, host, () => {
+    console.log(`Omnia Companion BFF listening on http://${host}:${port}`);
+  });
+  return server;
+}
 
-async function route(req, res) {
+async function route(req, res, { sessionStore, workflowService, procurementService, exportService }) {
   const url = new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`);
 
   if (req.method === "OPTIONS") {
-    return sendNoContent(res, corsHeaders());
+    return sendNoContent(res);
   }
 
   if (!url.pathname.startsWith("/api/")) {
-    return sendJson(res, 404, { error: { message: "Not found", status: 404 } });
+    return sendJson(res, 404, { error: createErrorPayload("NOT_FOUND", "Not found", 404) });
   }
 
   if (req.method === "GET" && url.pathname === "/api/health") {
@@ -72,10 +77,11 @@ async function route(req, res) {
 
     if (!username || (!password && !omniaAccessToken)) {
       return sendJson(res, 400, {
-        error: {
-          message: "Benutzername und Passwort oder Omnia-Token sind erforderlich.",
-          status: 400,
-        },
+        error: createErrorPayload(
+          "VALIDATION_FAILED",
+          "Benutzername und Passwort oder Omnia-Token sind erforderlich.",
+          400,
+        ),
       });
     }
 
@@ -101,7 +107,7 @@ async function route(req, res) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/auth/session") {
-    const session = currentSession(req);
+    const session = currentSession(req, sessionStore);
     if (!session) return sendJson(res, 200, { session: null });
     return sendJson(res, 200, { session: publicSession(session) });
   }
@@ -119,7 +125,7 @@ async function route(req, res) {
     );
   }
 
-  const session = requireSession(req);
+  const session = requireSession(req, sessionStore);
 
   if (req.method === "GET" && url.pathname === "/api/workflows/bootstrap") {
     return sendJson(res, 200, await workflowService.getBootstrap(session));
@@ -172,7 +178,7 @@ async function route(req, res) {
   const supplierOrderMatch = url.pathname.match(/^\/api\/procurement\/cases\/([^/]+)\/suppliers\/([^/]+)\/orders$/);
   if (req.method === "POST" && supplierOrderMatch) {
     const record = await procurementService.getCase(session, decodeURIComponent(supplierOrderMatch[1]));
-    const result = await procurementService.createSupplierOrder(
+    const result = await procurementService.createSupplierOrderDraft(
       session,
       record,
       decodeURIComponent(supplierOrderMatch[2]),
@@ -180,33 +186,77 @@ async function route(req, res) {
     return sendJson(res, 201, { data: result });
   }
 
-  return sendJson(res, 404, { error: { message: "Not found", status: 404 } });
+  return sendJson(res, 404, { error: createErrorPayload("NOT_FOUND", "Not found", 404) });
 }
 
 function exportFormat(url) {
   return url.searchParams.get("format") || "xlsx";
 }
 
-function currentSession(req) {
+function currentSession(req, sessionStore) {
   const cookies = parseCookies(req.headers.cookie || "");
   return sessionStore.getSession(cookies.oc_session);
 }
 
-function requireSession(req) {
-  const session = currentSession(req);
+function requireSession(req, sessionStore) {
+  const session = currentSession(req, sessionStore);
   if (!session) {
     const error = new Error("Nicht angemeldet");
     error.status = 401;
+    error.code = "AUTH_REQUIRED";
     throw error;
   }
   return session;
 }
 
-function corsHeaders() {
+function applyCorsHeaders(res, allowedOrigin) {
+  for (const [name, value] of Object.entries(corsHeaders(allowedOrigin))) {
+    res.setHeader(name, value);
+  }
+}
+
+function corsHeaders(allowedOrigin) {
   return {
-    "access-control-allow-origin": "http://127.0.0.1:5173",
+    "access-control-allow-origin": allowedOrigin,
     "access-control-allow-methods": "GET,POST,OPTIONS",
     "access-control-allow-headers": "content-type",
     "access-control-allow-credentials": "true",
   };
+}
+
+function normalizeError(error, status) {
+  const code = error.code || (status === 500 ? "INTERNAL_ERROR" : "BFF_ERROR");
+  return createErrorPayload(code, status === 500 && !error.code ? "Internal server error" : error.message, status, {
+    correlationId: error.correlationId || null,
+    retryable: Boolean(error.retryable),
+    ...(error.details ? { details: error.details } : {}),
+    ...(error.path ? { path: error.path } : {}),
+    ...(error.method ? { method: error.method } : {}),
+  });
+}
+
+function createErrorPayload(code, message, status, extra = {}) {
+  return {
+    code,
+    message,
+    status,
+    correlationId: null,
+    retryable: false,
+    ...extra,
+  };
+}
+
+function redactedLogError(error, status) {
+  return {
+    message: error.message,
+    status,
+    code: error.code || "INTERNAL_ERROR",
+    correlationId: error.correlationId || null,
+    path: error.path || null,
+    method: error.method || null,
+  };
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  startCompanionServer();
 }

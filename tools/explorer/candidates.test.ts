@@ -28,5 +28,5 @@ test("collectExploreCandidates does not convert empty button hrefs into root rou
 
   await collectExploreCandidates(page);
 
-  assert.match(source, /if \(!href\) return "";/);
+  assert.match(source, /if\s*\(\s*!href\s*\)\s*return\s*""/);
 });

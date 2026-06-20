@@ -1,96 +1,175 @@
-# Optica Omnia — Reverse-Engineering-Workspace
+# Optica Omnia API Workspace
 
-Dieses Verzeichnis hat zwei Naturen:
+Dieses Repo ist der Arbeitsstand fuer Optica-Omnia-API-Analyse,
+Recorder-Automation, OpenAPI-Aufbereitung und eine interne
+Companion-App. Es enthaelt weiterhin Hinweise auf die installierte
+Electron-Distribution, ist aber nicht mehr nur ein ASAR-/Bundle-Ablageort.
 
-1. **Installierte Electron-Distribution** der Branchensoftware Optica Omnia (Windows-Build, `.exe` + DLLs + `resources/app.asar`). Auf macOS nicht direkt lauffaehig — nur ueber Parallels.
-2. **Reverse-Engineering-Workspace**, der die API hinter der App dokumentiert und einen Recorder bereitstellt, um den Verkehr live nachzuvollziehen.
+## Schnelleinstieg
 
-## Wo was liegt
-
-```
-.
-├── README.md                       ← Du bist hier
-├── environment.json                ← Backend-Basis-URL (api2.optica-omnia.de)
-├── Optica Omnia.exe + DLLs         ← Windows-Build der App
-├── resources/app.asar              ← Electron-Renderer-Bundle (gepackt)
-├── tools/                          ← Hardware-Treiber (Drucker, TSE, Kartenleser, Signpad)
-├── locales/                        ← Chromium-Sprachpakete
-│
-├── docs/                           ← Dokumentation (lebt)
-│   ├── api2-backend-paths.md       ← Vollstaendige API-Pfad-Doku (Quelle: Bundle + Recording)
-│   └── omnia-api-plan.md           ← Ursprueglicher Soll-Plan aus dem Benutzerhandbuch
-│
-├── tmp/                            ← Arbeitsdateien (nicht in Git)
-│   ├── api2-assets/                ← Aus Frontend extrahierte JS/CSS-Bundles
-│   ├── app-asar-unpacked/          ← Entpackter Inhalt von resources/app.asar (Electron-Quelle)
-│   ├── app-asar-tools/             ← Hilfswerkzeuge zum asar-Entpacken
-│   ├── api2-backend-paths.json     ← Strukturierte Pfad-Daten
-│   ├── api2-token-resolution.json  ← Aufgeloeste minifizierte Tokens
-│   └── live-gateway-mapping.json   ← Service-internal-Path → Live-Gateway-Prefix
-│
-└── playwright-recorder/            ← API-Recorder fuer macOS (mit Electron-IPC-Stub)
-    ├── README.md                   ← Setup-, Bedien- und Stub-Doku
-    ├── src/record-api-traffic.js
-    ├── src/electron-ipc-stub.js
-    ├── .env.example
-    └── captures/                   ← Recording-Output (NICHT in Git)
-```
-
-## Einstiegspunkte je nach Ziel
-
-| Du willst … | Lies / Mach |
+| Ziel | Einstieg |
 |---|---|
-| Einen nutzbaren Einstieg in die echte `/apigateway/*`-API | [docs/apigateway/README.md](docs/apigateway/README.md) |
-| Verstehen, welche API-Endpoints existieren | [docs/api2-backend-paths.md](docs/api2-backend-paths.md) |
-| Wissen, wie die API fachlich gedacht ist | [docs/omnia-api-plan.md](docs/omnia-api-plan.md) |
-| Live-Verkehr mitschneiden | [playwright-recorder/README.md](playwright-recorder/README.md) |
-| Den Electron-Wrapper-Code lesen | [tmp/app-asar-unpacked/](tmp/app-asar-unpacked/) |
-| Den Renderer-Code (Angular-Bundle) lesen | [tmp/api2-assets/main.8a0dd4ca3e39df01.js](tmp/api2-assets/main.8a0dd4ca3e39df01.js) (8 MB, minifiziert) |
+| Echte `/apigateway/*`-API nutzen | [docs/apigateway/README.md](docs/apigateway/README.md) |
+| Beobachtete OpenAPI-Spezifikation lesen | [openapi/omnia-observed.openapi.yaml](openapi/omnia-observed.openapi.yaml) |
+| API-Katalog und Endpunkte verstehen | [docs/03_api_catalog.md](docs/03_api_catalog.md), [docs/api2-backend-paths.md](docs/api2-backend-paths.md) |
+| Live-Verkehr aufnehmen | [playwright-recorder/README.md](playwright-recorder/README.md) |
+| Native Electron-App per CDP/Voice steuern | [playwright-recorder/README.md#native-windows-app-per-cdp-testen](playwright-recorder/README.md#native-windows-app-per-cdp-testen) |
+| Companion-App starten oder erweitern | [companion-app/](companion-app/) |
+| Sicherheitsregeln pruefen | [docs/SECURITY.md](docs/SECURITY.md) |
 
-## Methodik — wie die API-Doku entstanden ist
+## Repo-Struktur
 
-Die Pfad-Doku in [docs/api2-backend-paths.md](docs/api2-backend-paths.md) ist aus drei Quellen kombiniert:
+```text
+.
+|-- README.md                         Dieser Einstieg
+|-- environment.json                  Backend-Basis-URL
+|-- openapi/
+|   `-- omnia-observed.openapi.yaml   Beobachteter OpenAPI-Stand
+|-- docs/                             Laufende Analyse- und Plattform-Doku
+|   |-- 01_inventory.md ... 16_codex_api_context.md
+|   |-- apigateway/                   Gateway-Kontrakt, Workflows, Guardrails
+|   |-- openapi.generated.json        Generierter API-Zwischenstand
+|   `-- openapi.cumulative.json       Kumulierte Recording-Ergebnisse
+|-- tools/                            TS-/MJS-Toolchain fuer Analyse und Reports
+|   |-- explore-hands-off.ts          Read-only Auto-Explorer
+|   |-- write-lab.ts                  Manuell freigegebene Write-Flows
+|   |-- build-api-catalog.ts          API-Katalog-Generator
+|   |-- recording-*.ts                Recording-Auswertung und Planung
+|   `-- *_pos_*.ps1                   POS-/Hardware-Testskripte
+|-- playwright-recorder/              Web-Recorder, Native-CDP und Voice-Stack
+|   |-- src/record-api-traffic.js
+|   |-- src/native-cdp-*.js
+|   |-- src/native-cdp-voice-*.js
+|   `-- captures/                     Lokale Captures, nicht committen
+|-- companion-app/                    React/Vite-App plus lokaler BFF
+|   |-- src/
+|   `-- server/
+`-- tmp/                              Lokale Extrakte und Arbeitsdateien
+```
 
-1. **Statische String-Extraktion** aus dem minifizierten Angular-Bundle (`tmp/api2-assets/main.*.js`). Liefert Pfade, die als String-Literal im Bundle stehen.
+Die originale Windows-/Electron-Distribution (`Optica Omnia.exe`,
+`resources/app.asar`, DLLs, Chromium-Dateien) kann lokal neben diesen
+Arbeitsdateien liegen. Diese grossen oder binaeren Artefakte sind nicht
+der primare Einstieg und werden weitgehend ignoriert.
 
-2. **Minifizierte Token aufgeloest** — die OpenAPI-generierten Services nutzen
-   ```js
-   .httpClient.request("get", `${this.configuration.basePath}${_e}`, …)
-   ```
-   wobei `_e` eine modul-lokale Konstante ist mit dem eigentlichen Pfad-Template wie
-   ```js
-   `/customers/${this.configuration.encodeParam({name:"customerUuid",…})}`.
-   ```
-   Wir scannen das Bundle nach jeder solchen `basePath`-URL-Stelle, suchen rueckwaerts im selben Modul nach der Zuweisung des Tokens, und uebersetzen `encodeParam({name:"X",…})` zu `{X}`. Ergebnis: [tmp/api2-token-resolution.json](tmp/api2-token-resolution.json).
+## Arbeitsbereiche
 
-3. **Live-Recording** ueber den Playwright-Recorder. Dieser oeffnet die Web-App in Chromium, faelscht das Electron-IPC-Bridge so, dass die App glaubt, sie laeuft in der echten Electron-Huelle (siehe naechster Abschnitt), und protokolliert alle `/apigateway/`-Calls. Ergebnis: aktuelle Gateway-Prefixe und ~50 Endpoints, die aus den Bundle-Quellen nicht extrahierbar waren.
+### API-Dokumentation
 
-## Warum der Stub noetig ist
+Die API-Doku entsteht aus statischer Bundle-Analyse, OpenAPI-Generatoren
+und Live-Recordings. Der nutzbare Gateway-Einstieg liegt unter
+[docs/apigateway/](docs/apigateway/); die beobachtete maschinenlesbare
+Spezifikation liegt in [openapi/omnia-observed.openapi.yaml](openapi/omnia-observed.openapi.yaml).
 
-Die Web-App prueft beim Start `window.isElectron` und ruft via
-`window.ipcRenderer.send("get-machine-file-data")` eine
-Arbeitsplatzkennung ab, die normalerweise vom Electron-Main-Process aus
-einer `optica.sign`-Datei kommt (MD5-Hash aus MAC + Hostname + Platform
-+ CPU). Ohne IPC bricht der Renderer mit "Arbeitsplatzkennung kann
-nicht bestimmt werden" ab.
+Wichtige Zusatzdateien:
 
-Der Recorder injiziert deshalb [playwright-recorder/src/electron-ipc-stub.js](playwright-recorder/src/electron-ipc-stub.js)
-vor dem Angular-Bundle. Der Stub spielt nur die Channels nach, die fuer
-den Login-Pfad relevant sind. machineId und tenantId stammen aus einer
-echten optica.sign-Datei einer bestehenden Installation (z. B. der
-Windows-VM unter Parallels).
+- [docs/api2-backend-paths.md](docs/api2-backend-paths.md): historischer Pfadkatalog aus Bundle und Recording.
+- [docs/openapi.generated.json](docs/openapi.generated.json): generierter Zwischenstand.
+- [docs/openapi.cumulative.json](docs/openapi.cumulative.json): kumulierte Beobachtungen aus Recordings.
+- [docs/swagger-ui.html](docs/swagger-ui.html): lokale OpenAPI-Ansicht.
 
-## Voraussetzungen fuer den Recorder
+### Recorder und Native-CDP
 
-- Eine bestehende, registrierte Optica-Omnia-Installation, deren `optica.sign` zugaenglich ist (typischerweise die Windows-VM).
-- Login-Credentials.
-- Node.js + Playwright-Chromium.
+[playwright-recorder/](playwright-recorder/) enthaelt den klassischen
+Web-Recorder, Analyse-Skripte und den Native-CDP-Stack fuer die echte
+Windows-/Electron-App. Der Recorder injiziert einen Electron-IPC-Stub,
+damit der Web-Renderer ausserhalb der Electron-Huelle starten kann.
 
-Details: [playwright-recorder/README.md](playwright-recorder/README.md).
+```bash
+cd playwright-recorder
+npm install
+npm run install:browsers
+npm run record
+```
 
-## DSGVO-Hinweis
+Weitere wichtige Skripte:
 
-Recordings koennen Gesundheits- und Versicherungsdaten enthalten. Der
-Recorder warnt beim Start, schliesst `captures/` per `.gitignore` aus
-und maskiert sensible Header. Captures gehoeren nicht in Repos, in
-Cloud-Speicher oder in Chats.
+- `npm run native:probe`: einmaliger CDP-Verbindungstest.
+- `npm run native:session`: interaktive Native-CDP-Session.
+- `npm run native:voice`: lokales Chat-/Voice-Panel auf `http://127.0.0.1:8787/`.
+- `npm run analyze` und `npm run analyze:all`: Capture-Auswertung.
+- `npm test`: Node-Testlauf fuer Recorder-Module.
+
+### Toolchain
+
+[tools/](tools/) ist die zentrale Analyse-Toolchain. Sie baut Kataloge,
+wertet Recordings aus, erstellt Reports, steuert read-only Exploration
+und kapselt das Write-Lab. Die Testdateien liegen direkt daneben als
+`*.test.ts` oder `*.test.mjs`.
+
+Typische Einstiegspunkte:
+
+- `tools/explore-hands-off.ts`: sichere Read-only-Erkundung mit Write-Guard.
+- `tools/record-network.ts` und `tools/record-flow.ts`: Netzwerk- und Flow-Aufzeichnung.
+- `tools/build-api-catalog.ts`: Kataloggenerierung.
+- `tools/coverage-report.ts`, `tools/focus-module-coverage.ts`: Coverage-Auswertung.
+- `tools/write-lab.ts`: schreibende Testflows nur mit expliziter Freigabe.
+- `tools/redact.ts`: Redaction vor Dokumentation oder Sharing.
+
+### Companion-App
+
+[companion-app/](companion-app/) ist eine React/Vite-App mit lokalem
+Node-BFF. Sie nutzt die beobachteten API-Strukturen fuer interne
+Workflows und Exportfunktionen.
+
+```bash
+cd companion-app
+npm install
+npm run dev
+```
+
+In einem zweiten Terminal:
+
+```bash
+cd companion-app
+npm run api
+```
+
+Weitere Skripte:
+
+- `npm run build`: TypeScript- und Vite-Build.
+- `npm run preview`: gebautes Frontend lokal ansehen.
+- `npm run test:bff`: Node-Tests fuer den BFF.
+
+## Doku-Lesepfad
+
+Die nummerierten Dokumente in [docs/](docs/) bilden den aktuellen
+Lesepfad. Wer frisch einsteigt, liest in dieser Reihenfolge:
+
+1. [Projektinventar](docs/01_inventory.md)
+2. [Statische API- und Netzwerk-Fundstellen](docs/02_static_api_findings.md)
+3. [API-Katalog](docs/03_api_catalog.md)
+4. [Flow-to-API-Mapping](docs/04_flow_to_api_mapping.md)
+5. [OpenAPI-Vorbereitung](docs/05_openapi_plan.md)
+6. [Auto-Explore Read-only Report](docs/06_auto_explore_report.md)
+7. [Write-Lab Report](docs/07_write_lab_report.md)
+8. [API-Coverage-Report](docs/08_api_coverage_report.md)
+9. [Recording-Workflow](docs/09_recording_workflow.md)
+10. [Omnia-Knowledge-Report](docs/10_omnia_knowledge.md)
+11. [Plattform-Blueprint](docs/11_platform_blueprint.md)
+12. [Omnia-Relationship-Map](docs/12_omnia_relationships.md)
+13. [Omnia-Data-Model](docs/13_omnia_data_model.md)
+14. [Omnia-UI-Map](docs/14_omnia_ui_map.md)
+15. [Fokus-Coverage: Stammdaten, Vorgaenge, Warenwirtschaft](docs/15_focus_module_coverage.md)
+16. [Codex API Context](docs/16_codex_api_context.md)
+
+Danach sind [docs/apigateway/README.md](docs/apigateway/README.md) und
+[openapi/omnia-observed.openapi.yaml](openapi/omnia-observed.openapi.yaml)
+die praktischen Referenzen fuer Implementierung und Integration.
+
+## Sicherheit
+
+Recordings koennen Gesundheits-, Versicherungs-, Session- und
+Zugangsdaten enthalten. Vor jeder Aufnahme, Auswertung oder Uebernahme in
+Dokumentation gelten die Regeln in [docs/SECURITY.md](docs/SECURITY.md).
+
+Wichtig:
+
+- Keine echten Patientendaten, Tokens, Cookies, Machine-IDs, Tenant-IDs
+  oder Zugangsdaten committen.
+- Captures, HARs, SQLite-/DB-Dateien, Sessions und Playwright
+  `storageState.json` bleiben lokal und sind per `.gitignore` blockiert.
+- Response-Bodies nur speichern oder dokumentieren, wenn sie vorher durch
+  `tools/redact.ts` gelaufen sind.
+- Schreibende Fachprozesse gehoeren ins Write-Lab und brauchen explizite
+  manuelle Freigabe.

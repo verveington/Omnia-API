@@ -15,6 +15,11 @@ dist/
 *.bin
 *.dat
 logs/
+*.har
+*.sqlite
+*.db
+session*
+storageState.json
 output/
 tmp/
 docs/recordings/

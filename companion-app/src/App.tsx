@@ -8,7 +8,7 @@ import type {
   ProcurementSupplierOrderResult,
   SessionInfo,
 } from "./core/types";
-import { createProcurementSupplierOrder, getBootstrap, getSession, login, logout } from "./api/client";
+import { createProcurementSupplierOrderDraft, getBootstrap, getSession, login, logout } from "./api/client";
 import { AppShell } from "./components/AppShell";
 import { CasesModule } from "./features/cases/CasesModule";
 import { OrdersModule } from "./features/orders/OrdersModule";
@@ -112,8 +112,8 @@ export default function App() {
     setStatus("ready");
   }
 
-  async function handleCreateSupplierOrder(caseId: string, supplierId: string): Promise<ProcurementSupplierOrderResult> {
-    return createProcurementSupplierOrder(caseId, supplierId);
+  async function handleCreateSupplierOrderDraft(caseId: string, supplierId: string): Promise<ProcurementSupplierOrderResult> {
+    return createProcurementSupplierOrderDraft(caseId, supplierId);
   }
 
   if (status === "checking") {
@@ -159,7 +159,7 @@ export default function App() {
           selectedCase={selectedProcurementCase}
           onSelectCase={(record: ProcurementCase) => setSelectedProcurementCaseId(record.id)}
           onAction={recordAction}
-          onCreateSupplierOrder={handleCreateSupplierOrder}
+          onCreateSupplierOrderDraft={handleCreateSupplierOrderDraft}
         />
       ) : null}
 
