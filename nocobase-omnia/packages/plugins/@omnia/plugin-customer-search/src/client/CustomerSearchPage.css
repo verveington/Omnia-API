@@ -1,0 +1,75 @@
+.omnia-customer-page {
+  min-height: 100%;
+  padding: 24px;
+  background: #f4f5f7;
+}
+
+.omnia-customer-content {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.omnia-customer-workspace {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.3fr);
+  min-height: 420px;
+  border: 1px solid #d9dce1;
+  background: #fff;
+}
+
+.omnia-customer-results {
+  min-width: 0;
+  border-right: 1px solid #d9dce1;
+}
+
+.omnia-customer-results .ant-list-bordered {
+  border: 0;
+  border-radius: 0;
+}
+
+.omnia-customer-row {
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.omnia-customer-row:hover,
+.omnia-customer-row:focus-visible {
+  background: #f2f7ff;
+}
+
+.omnia-customer-row:focus-visible {
+  box-shadow: inset 3px 0 0 #1677ff;
+}
+
+.omnia-customer-row.is-selected {
+  background: #eaf3ff;
+  box-shadow: inset 3px 0 0 #1677ff;
+}
+
+.omnia-customer-detail {
+  min-width: 0;
+  padding: 20px;
+}
+
+.omnia-customer-detail-loading {
+  display: grid;
+  min-height: 280px;
+  place-items: center;
+}
+
+@media (max-width: 760px) {
+  .omnia-customer-page {
+    padding: 16px;
+  }
+
+  .omnia-customer-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .omnia-customer-results {
+    border-right: 0;
+    border-bottom: 1px solid #d9dce1;
+  }
+}

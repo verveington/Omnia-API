@@ -14,14 +14,14 @@ export class OmniaCustomerSearchServer extends Plugin {
       actions: {
         search: async (ctx) => {
           try {
-            ctx.body = await gateway.searchCustomers(ctx.action.params.q);
+            ctx.body = await gateway.searchCustomers(ctx.request.body?.q);
           } catch (error) {
             handleGatewayError(ctx, error);
           }
         },
         summary: async (ctx) => {
           try {
-            ctx.body = await gateway.getCustomerSummary(ctx.action.params.customerId);
+            ctx.body = await gateway.getCustomerSummary(ctx.request.body?.customerId);
           } catch (error) {
             handleGatewayError(ctx, error);
           }

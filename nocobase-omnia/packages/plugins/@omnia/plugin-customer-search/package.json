@@ -1,7 +1,7 @@
 {
   "name": "@omnia/plugin-customer-search",
   "version": "0.1.0",
-  "main": "dist/server/index.js",
+  "main": "dist/index.js",
   "description": "Read-only Omnia customer search through the local FastAPI adapter.",
   "license": "UNLICENSED",
   "peerDependencies": {
@@ -9,4 +9,3 @@
     "@nocobase/server": "2.0.60"
   }
 }
-

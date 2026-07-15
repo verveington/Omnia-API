@@ -18,6 +18,7 @@
     "build": "nocobase build",
     "test": "nocobase test",
     "e2e": "nocobase e2e",
+    "test:e2e:omnia": "playwright test --config playwright.omnia.config.ts",
     "tar": "nocobase tar",
     "postinstall": "nocobase postinstall",
     "lint": "eslint ."
@@ -34,11 +35,14 @@
     "semver": "^7.7.1"
   },
   "dependencies": {
-    "pm2": "^6.0.5",
-    "mysql2": "^3.14.0",
+    "@nocobase/cli": "2.0.60",
     "mariadb": "^2.5.6",
+    "mysql2": "^3.14.0",
     "pg": "^8.14.1",
     "pg-hstore": "^2.3.4",
-    "@nocobase/cli": "2.0.60"
+    "pm2": "^6.0.5"
+  },
+  "devDependencies": {
+    "@nocobase/devtools": "2.0.60"
   }
 }

@@ -13,6 +13,11 @@ lerna-debug.log
 *.sqlite
 coverage
 .umi
+__pycache__/
+*.pyc
+tsconfig.paths.json
+/playwright-report/
+/test-results/
 /uploads
 .env.test
 docs-dist/
@@ -21,5 +26,6 @@ dist/
 /docker/**/storage
 /storage/.app-dev
 /storage/logs
+/storage/playwright/
 /storage/uploads/*
 !/storage/uploads/.gitkeep

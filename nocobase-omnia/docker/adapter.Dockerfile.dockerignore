@@ -1,0 +1,17 @@
+*
+!adapter/
+adapter/*
+!adapter/pyproject.toml
+!adapter/uv.lock
+!adapter/omnia_adapter/
+adapter/omnia_adapter/*
+!adapter/omnia_adapter/*.py
+!openapi/
+openapi/*
+!openapi/*.yaml
+!nocobase-omnia/
+nocobase-omnia/*
+!nocobase-omnia/e2e/
+nocobase-omnia/e2e/*
+!nocobase-omnia/e2e/__init__.py
+!nocobase-omnia/e2e/omnia_upstream_fixture.py

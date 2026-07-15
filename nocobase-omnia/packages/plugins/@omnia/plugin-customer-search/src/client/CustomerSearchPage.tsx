@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Alert, Button, Descriptions, Empty, Input, Layout, List, Space, Spin, Typography } from 'antd';
+import React, { useRef, useState } from 'react';
+import { Alert, Descriptions, Empty, Input, List, Space, Spin, Typography } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { useAPIClient } from '@nocobase/client';
+import './CustomerSearchPage.css';
 
 type Customer = {
   id?: string;
@@ -23,92 +24,166 @@ type Summary = {
 
 export default function CustomerSearchPage() {
   const api = useAPIClient();
+  const searchSequence = useRef(0);
+  const summarySequence = useRef(0);
   const [query, setQuery] = useState('');
   const [items, setItems] = useState<Customer[]>([]);
+  const [selectedId, setSelectedId] = useState<string>();
   const [selected, setSelected] = useState<Summary>();
-  const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [summaryLoading, setSummaryLoading] = useState(false);
   const [error, setError] = useState('');
 
   async function search() {
-    if (query.trim().length < 2) return;
-    setLoading(true);
+    const normalizedQuery = query.trim();
+    const sequence = ++searchSequence.current;
+    summarySequence.current += 1;
+    setSearchLoading(false);
+    setSummaryLoading(false);
     setError('');
+    setSelectedId(undefined);
     setSelected(undefined);
-    try {
-      const response = await api.request({ url: 'omniaCustomers:search', params: { q: query.trim() } });
-      setItems(Array.isArray(response.data) ? response.data : []);
-    } catch {
+    if (normalizedQuery.length < 2) {
       setItems([]);
-      setError('Die Kundensuche ist derzeit nicht verfügbar.');
+      setHasSearched(false);
+      return;
+    }
+    setSearchLoading(true);
+    setHasSearched(true);
+    try {
+      const response = await api.request({
+        url: 'omniaCustomers:search',
+        method: 'post',
+        data: { q: normalizedQuery },
+      });
+      if (sequence === searchSequence.current) {
+        const customers = response.data?.data ?? response.data;
+        setItems(Array.isArray(customers) ? customers : []);
+      }
+    } catch {
+      if (sequence === searchSequence.current) {
+        setItems([]);
+        setError('Die Kundensuche ist derzeit nicht verfügbar.');
+      }
     } finally {
-      setLoading(false);
+      if (sequence === searchSequence.current) setSearchLoading(false);
     }
   }
 
   async function showSummary(customer: Customer) {
     if (!customer.id) return;
-    setLoading(true);
+    const sequence = ++summarySequence.current;
+    setSelectedId(customer.id);
+    setSelected(undefined);
+    setSummaryLoading(true);
     setError('');
     try {
       const response = await api.request({
         url: 'omniaCustomers:summary',
-        params: { customerId: customer.id },
+        method: 'post',
+        data: { customerId: customer.id },
       });
-      setSelected(response.data);
+      if (sequence === summarySequence.current) {
+        setSelected(response.data?.data ?? response.data);
+      }
     } catch {
-      setError('Die Kundenansicht ist derzeit nicht verfügbar.');
+      if (sequence === summarySequence.current) {
+        setError('Die Kundenansicht ist derzeit nicht verfügbar.');
+      }
     } finally {
-      setLoading(false);
+      if (sequence === summarySequence.current) setSummaryLoading(false);
     }
   }
 
+  function changeQuery(nextQuery: string) {
+    searchSequence.current += 1;
+    summarySequence.current += 1;
+    setQuery(nextQuery);
+    setItems([]);
+    setSelectedId(undefined);
+    setSelected(undefined);
+    setHasSearched(false);
+    setSearchLoading(false);
+    setSummaryLoading(false);
+    setError('');
+  }
+
+  function selectFromKeyboard(event: React.KeyboardEvent, customer: Customer) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      void showSummary(customer);
+    }
+  }
+
+  const listEmptyText = hasSearched ? 'Keine Treffer' : 'Suche starten';
+
   return (
-    <Layout style={{ minHeight: '100%', padding: 24, background: '#f5f5f5' }}>
-      <Space direction="vertical" size={16} style={{ width: '100%', maxWidth: 1280, margin: '0 auto' }}>
+    <main className="omnia-customer-page">
+      <Space className="omnia-customer-content" direction="vertical" size={16}>
         <Typography.Title level={2} style={{ margin: 0 }}>Kunden</Typography.Title>
         <Input.Search
           aria-label="Kunden suchen"
-          enterButton={<Button type="primary" icon={<SearchOutlined />}>Suchen</Button>}
+          enterButton={<span><SearchOutlined /> Suchen</span>}
           placeholder="Name oder Kundennummer"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          onSearch={search}
-          loading={loading}
+          onChange={(event) => changeQuery(event.target.value)}
+          onSearch={() => void search()}
+          loading={searchLoading}
           maxLength={200}
         />
+        {query.trim().length === 1 && (
+          <Typography.Text type="secondary">Mindestens zwei Zeichen eingeben.</Typography.Text>
+        )}
         {error && <Alert type="error" showIcon message={error} />}
-        <Layout style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(360px, 1.2fr)', gap: 16, background: 'transparent' }}>
-          <List
-            bordered
-            style={{ background: '#fff' }}
-            loading={loading}
-            locale={{ emptyText: <Empty description="Keine Treffer" /> }}
-            dataSource={items}
-            renderItem={(customer) => (
-              <List.Item onClick={() => showSummary(customer)} style={{ cursor: customer.id ? 'pointer' : 'default' }}>
-                <List.Item.Meta
-                  avatar={<UserOutlined />}
-                  title={customer.name || 'Unbenannter Kunde'}
-                  description={[customer.customerNumber, customer.addressPreview].filter(Boolean).join(' · ')}
-                />
-              </List.Item>
-            )}
-          />
-          <div style={{ background: '#fff', border: '1px solid #d9d9d9', padding: 16, minHeight: 280 }}>
-            {loading && !selected ? <Spin /> : selected?.customer ? (
-              <Descriptions title={selected.customer.name || 'Kunden-Kurzansicht'} bordered column={1} size="small">
-                <Descriptions.Item label="Kundennummer">{selected.customer.customerNumber || '–'}</Descriptions.Item>
-                <Descriptions.Item label="Geburtsdatum">{selected.customer.birthDate || '–'}</Descriptions.Item>
-                <Descriptions.Item label="Telefon">{selected.phones?.join(', ') || selected.customer.phone || '–'}</Descriptions.Item>
-                <Descriptions.Item label="E-Mail">{selected.customer.email || '–'}</Descriptions.Item>
-                <Descriptions.Item label="Adresse">{selected.addresses?.[0]?.preview || selected.customer.addressPreview || '–'}</Descriptions.Item>
-                <Descriptions.Item label="Offene Vorgänge">{selected.openProcesses?.length ?? 0}</Descriptions.Item>
-              </Descriptions>
-            ) : <Empty description="Kunde aus der Trefferliste auswählen" />}
+        <section className="omnia-customer-workspace" aria-label="Kundensuche und Kurzansicht">
+          <div className="omnia-customer-results" role="listbox" aria-label="Suchergebnisse">
+            <List
+              bordered
+              loading={searchLoading}
+              locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={listEmptyText} /> }}
+              dataSource={items}
+              renderItem={(customer) => (
+                <List.Item
+                  aria-selected={customer.id === selectedId}
+                  className={`omnia-customer-row${customer.id === selectedId ? ' is-selected' : ''}`}
+                  onClick={() => void showSummary(customer)}
+                  onKeyDown={(event) => selectFromKeyboard(event, customer)}
+                  role="option"
+                  tabIndex={customer.id ? 0 : -1}
+                >
+                  <List.Item.Meta
+                    avatar={<UserOutlined />}
+                    title={customer.name || 'Unbenannter Kunde'}
+                    description={[customer.customerNumber, customer.addressPreview].filter(Boolean).join(' · ')}
+                  />
+                </List.Item>
+              )}
+            />
           </div>
-        </Layout>
+          <div className="omnia-customer-detail" aria-live="polite">
+            {summaryLoading ? (
+              <div className="omnia-customer-detail-loading"><Spin /></div>
+            ) : selected?.customer ? (
+              <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                {selected.warnings?.length ? (
+                  <Alert type="warning" showIcon message="Einige Kundendaten konnten nicht geladen werden." />
+                ) : null}
+                <Descriptions title={selected.customer.name || 'Kunden-Kurzansicht'} bordered column={1} size="small">
+                  <Descriptions.Item label="Kundennummer">{selected.customer.customerNumber || '–'}</Descriptions.Item>
+                  <Descriptions.Item label="Geburtsdatum">{selected.customer.birthDate || '–'}</Descriptions.Item>
+                  <Descriptions.Item label="Telefon">{selected.phones?.join(', ') || selected.customer.phone || '–'}</Descriptions.Item>
+                  <Descriptions.Item label="E-Mail">{selected.customer.email || '–'}</Descriptions.Item>
+                  <Descriptions.Item label="Adresse">{selected.addresses?.[0]?.preview || selected.customer.addressPreview || '–'}</Descriptions.Item>
+                  <Descriptions.Item label="Offene Vorgänge">{selected.openProcesses?.length ?? 0}</Descriptions.Item>
+                </Descriptions>
+              </Space>
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Kunde aus der Trefferliste auswählen" />
+            )}
+          </div>
+        </section>
       </Space>
-    </Layout>
+    </main>
   );
 }
-

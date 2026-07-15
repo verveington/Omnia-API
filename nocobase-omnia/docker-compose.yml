@@ -10,12 +10,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      adapter:
+        condition: service_healthy
     environment:
       APP_ENV: production
       APP_KEY: ${APP_KEY:?APP_KEY is required}
-      APP_PORT: 80
+      APP_PORT: 13000
       DB_DIALECT: postgres
       DB_HOST: postgres
       DB_PORT: 5432
@@ -27,12 +27,52 @@ services:
       INIT_ROOT_PASSWORD: ${INIT_ROOT_PASSWORD:?INIT_ROOT_PASSWORD is required}
       INIT_ROOT_NICKNAME: ${INIT_ROOT_NICKNAME:-Omnia Admin}
       INIT_ROOT_USERNAME: ${INIT_ROOT_USERNAME:-admin}
-      OMNIA_ADAPTER_URL: ${OMNIA_ADAPTER_URL:-http://host.docker.internal:8890}
+      LOGGER_LEVEL: silent
+      OMNIA_ADAPTER_URL: ${OMNIA_ADAPTER_URL:-http://adapter:8890}
       OMNIA_ADAPTER_TIMEOUT_MS: ${OMNIA_ADAPTER_TIMEOUT_MS:-8000}
     ports:
-      - "${NOCOBASE_PORT:-13000}:80"
+      - "${NOCOBASE_BIND_ADDRESS:-127.0.0.1}:${NOCOBASE_PORT:-13000}:80"
     volumes:
       - nocobase_storage:/app/nocobase/storage
+
+  adapter:
+    build:
+      context: ..
+      dockerfile: nocobase-omnia/docker/adapter.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      omnia-fixture:
+        condition: service_healthy
+    environment:
+      OMNIA_API_BASE_URL: http://omnia-fixture:8891
+      OMNIA_BEARER_TOKEN: omnia-ui-fixture-token
+      OMNIA_X_WORKSPACE: omnia-ui-fixture-workspace
+      OMNIA_CAPTURE_DEBUG: "0"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8890/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  omnia-fixture:
+    build:
+      context: ..
+      dockerfile: nocobase-omnia/docker/adapter.Dockerfile
+    command:
+      - uvicorn
+      - e2e.omnia_upstream_fixture:app
+      - --app-dir
+      - /workspace/nocobase-omnia
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8891"
+      - --no-access-log
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8891/__fixture/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   postgres:
     image: postgres:16-alpine
@@ -52,4 +92,3 @@ services:
 volumes:
   nocobase_storage:
   postgres_data:
-
